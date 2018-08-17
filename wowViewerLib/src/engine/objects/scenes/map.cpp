@@ -1,10 +1,12 @@
 //
 // Created by Deamon on 7/16/2017.
 //
-#include <algorithm>
+//#include <algorithm>
 #include <iostream>
 #include <set>
 #include <cmath>
+#include <pstl/execution>
+#include <pstl/algorithm>
 #include "map.h"
 #include "../../algorithms/mathHelper.h"
 #include "../../algorithms/grahamScan.h"
@@ -112,11 +114,13 @@ void Map::checkCulling(mathfu::mat4 &frustumMat, mathfu::mat4 &lookAtMat4, mathf
     std::copy(exteriorView.drawnM2s.begin(), exteriorView.drawnM2s.end(), inserter);
 
     //Sort and delete duplicates
-    std::sort( m2RenderedThisFrame.begin(), m2RenderedThisFrame.end() );
+    std::sort(std::execution::par_unseq,
+                       m2RenderedThisFrame.begin(), m2RenderedThisFrame.end() );
     m2RenderedThisFrame.erase( unique( m2RenderedThisFrame.begin(), m2RenderedThisFrame.end() ), m2RenderedThisFrame.end() );
     m2RenderedThisFrameArr = std::vector<M2Object*>(m2RenderedThisFrame.begin(), m2RenderedThisFrame.end());
 
-    std::sort( wmoRenderedThisFrame.begin(), wmoRenderedThisFrame.end() );
+    std::sort(std::execution::par_unseq,
+                       wmoRenderedThisFrame.begin(), wmoRenderedThisFrame.end() );
     wmoRenderedThisFrame.erase( unique( wmoRenderedThisFrame.begin(), wmoRenderedThisFrame.end() ), wmoRenderedThisFrame.end() );
     wmoRenderedThisFrameArr = std::vector<WmoObject*>(wmoRenderedThisFrame.begin(), wmoRenderedThisFrame.end());
 
@@ -220,7 +224,7 @@ void Map::checkExterior(mathfu::vec4 &cameraPos,
     }
 
     //Sort and delete duplicates
-    std::sort( wmoCandidates.begin(), wmoCandidates.end() );
+    std::sort(std::execution::par_unseq, wmoCandidates.begin(), wmoCandidates.end() );
     wmoCandidates.erase( unique( wmoCandidates.begin(), wmoCandidates.end() ), wmoCandidates.end() );
 
     //Frustum cull
@@ -247,17 +251,29 @@ void Map::checkExterior(mathfu::vec4 &cameraPos,
     }
 
     //Sort and delete duplicates
-    std::sort( m2ObjectsCandidates.begin(), m2ObjectsCandidates.end() );
+    std::sort(std::execution::par_unseq, m2ObjectsCandidates.begin(), m2ObjectsCandidates.end() );
     m2ObjectsCandidates.erase( unique( m2ObjectsCandidates.begin(), m2ObjectsCandidates.end() ), m2ObjectsCandidates.end() );
 
     //3.2 Iterate over all global WMOs and M2s (they have uniqueIds)
+    std::for_each(
+        std::execution::par_unseq,
+        std::begin(m2ObjectsCandidates),
+        std::end(m2ObjectsCandidates),
+        [cameraPos, this, frustumPoints](M2Object* m2ObjectsCandidate) {  // copies are safer, and the resulting code will be as quick.
+            // modifies value in place
+            bool frustumResult = m2ObjectsCandidate->checkFrustumCulling(
+                cameraPos,
+                this->exteriorView.frustumPlanes[0], //TODO:!
+                frustumPoints);
+        });
+
     for (auto &m2ObjectCandidate : m2ObjectsCandidates) {
-        bool frustumResult = m2ObjectCandidate->checkFrustumCulling(
-            cameraPos,
-            exteriorView.frustumPlanes[0], //TODO:!
-            frustumPoints) ;
+//        bool frustumResult = m2ObjectCandidate->checkFrustumCulling(
+//            cameraPos,
+//            exteriorView.frustumPlanes[0], //TODO:!
+//            frustumPoints) ;
 //        bool frustumResult = true;
-        if (frustumResult) {
+        if (m2ObjectCandidate->m_cullResult) {
             exteriorView.drawnM2s.push_back(m2ObjectCandidate);
             m2RenderedThisFrame.push_back(m2ObjectCandidate);
         }
@@ -296,11 +312,15 @@ void Map::update(double deltaTime, mathfu::vec3 &cameraVec3, mathfu::mat4 &frust
 
     Config* config = this->m_api->getConfig();
 //    if (config->getRenderM2()) {
-        std::for_each(m2RenderedThisFrameArr.begin(), m2RenderedThisFrameArr.end(), [deltaTime, &cameraVec3, &lookAtMat](M2Object *m2Object) {
+
+    std::for_each(
+        std::execution::par_unseq,
+        m2RenderedThisFrameArr.begin(),
+        m2RenderedThisFrameArr.end(),
+        [deltaTime, &cameraVec3, &lookAtMat](M2Object *m2Object) {
             if (m2Object == nullptr) return;
             m2Object->update(deltaTime, cameraVec3, lookAtMat);
         });
-//    }
 
     for (auto &wmoObject : this->wmoRenderedThisFrameArr) {
         wmoObject->update();
@@ -311,7 +331,9 @@ void Map::update(double deltaTime, mathfu::vec3 &cameraVec3, mathfu::mat4 &frust
     }
 
     //2. Calc distance every 100 ms
-    std::for_each(m2RenderedThisFrameArr.begin(), m2RenderedThisFrameArr.end(), [&cameraVec3](M2Object *m2Object) {
+    std::for_each(std::execution::par_unseq,
+                  m2RenderedThisFrameArr.begin(),
+                  m2RenderedThisFrameArr.end(), [&cameraVec3](M2Object *m2Object) {
         if (m2Object == nullptr) return;
         m2Object->calcDistance(cameraVec3);
     });
@@ -591,7 +613,8 @@ void Map::draw() {
     for (auto &view : vector) {
         std::copy(view->drawnM2s.begin(),view->drawnM2s.end(), std::back_inserter(m2ObjectsRendered));
     }
-    std::sort( m2ObjectsRendered.begin(), m2ObjectsRendered.end() );
+    std::sort(std::execution::par_unseq,
+    m2ObjectsRendered.begin(), m2ObjectsRendered.end() );
     m2ObjectsRendered.erase( unique( m2ObjectsRendered.begin(), m2ObjectsRendered.end() ), m2ObjectsRendered.end() );
 
     for (auto &m2Object : m2ObjectsRendered) {
@@ -600,7 +623,8 @@ void Map::draw() {
         m2Object->drawParticles(renderedThisFrame, m_viewRenderOrder);
     }
 
-    std::sort(renderedThisFrame.begin(),
+    std::sort(        std::execution::par_unseq,
+                      renderedThisFrame.begin(),
               renderedThisFrame.end(),
               GDevice::sortMeshes
     );

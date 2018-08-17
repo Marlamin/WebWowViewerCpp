@@ -3,6 +3,8 @@
 //
 
 #include <iostream>
+#include <pstl/execution>
+#include <pstl/algorithm>
 #include "../engine/opengl/header.h"
 #include "GDevice.h"
 #include "../engine/algorithms/hashString.h"
@@ -199,7 +201,8 @@ void GDevice::updateBuffers(std::vector<HGMesh> &meshes) {
         }
     }
 
-    std::sort( buffers.begin(), buffers.end(), [](const HGUniformBuffer &a, const HGUniformBuffer &b) -> bool {
+    std::sort(
+        std::execution::par_unseq, buffers.begin(), buffers.end(), [](const HGUniformBuffer &a, const HGUniformBuffer &b) -> bool {
         return a->m_creationIndex > b->m_creationIndex;
     });
     buffers.erase( unique( buffers.begin(), buffers.end() ), buffers.end() );
@@ -380,13 +383,13 @@ void GDevice::drawMesh(HGMesh &hmesh) {
     if (gOcclusionQuery != nullptr) {
         gOcclusionQuery->beginQuery();
     }
-    if (gm2Mesh != nullptr) {
+    if (gm2Mesh != nullptr && gm2Mesh->m_query != nullptr) {
         gm2Mesh->m_query->beginConditionalRendering();
     }
 
     glDrawElements(hmesh->m_element, hmesh->m_end, GL_UNSIGNED_SHORT, (const void *) (hmesh->m_start ));
 
-    if (gm2Mesh != nullptr) {
+    if (gm2Mesh != nullptr && gm2Mesh->m_query != nullptr) {
         gm2Mesh->m_query->endConditionalRendering();
     }
 

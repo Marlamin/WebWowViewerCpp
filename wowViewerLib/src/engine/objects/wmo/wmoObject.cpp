@@ -6,7 +6,8 @@
 #include "../../algorithms/mathHelper.h"
 #include "../../shader/ShaderDefinitions.h"
 #include "../../persistance/header/commonFileStructs.h"
-#include <algorithm>
+#include <pstl/algorithm>
+#include <pstl/execution>
 
 std::vector<mathfu::vec3> CreateOccluders(const HWmoGroupGeom groupGeom)
 {
@@ -817,7 +818,9 @@ bool WmoObject::startTraversingWMOGroup(
     }
 
     //Process results
-    std::sort(createdInteriorViews.begin(), createdInteriorViews.end(), [](const InteriorView &a, const InteriorView &b) -> bool {
+    std::sort(
+        std::execution::par_unseq,
+        createdInteriorViews.begin(), createdInteriorViews.end(), [](const InteriorView &a, const InteriorView &b) -> bool {
         if (a.viewCreated != b.viewCreated) {
             return a.viewCreated > b.viewCreated;
         }
@@ -829,7 +832,9 @@ bool WmoObject::startTraversingWMOGroup(
             break;
         }
     }
-    std::sort(createdInteriorViews.begin(), createdInteriorViews.end(), [](const InteriorView &a, const InteriorView &b) -> bool {
+    std::sort(
+        std::execution::par_unseq,
+        createdInteriorViews.begin(), createdInteriorViews.end(), [](const InteriorView &a, const InteriorView &b) -> bool {
         if (a.level != b.level) {
             return a.level < b.level;
         }
@@ -1242,12 +1247,15 @@ void GeneralView::addM2FromGroups(mathfu::mat4 &frustumMat, mathfu::mat4 &lookAt
     }
 
     //Delete duplicates
-    std::sort( candidates.begin(), candidates.end() );
+    std::sort(
+        std::execution::par_unseq,
+        candidates.begin(), candidates.end() );
     candidates.erase( unique( candidates.begin(), candidates.end() ), candidates.end() );
 
 //    std::vector<bool> candidateResults = std::vector<bool>(candidates.size(), false);
 
     std::for_each(
+        std::execution::par_unseq,
         candidates.begin(),
         candidates.end(),
         [this, &cameraPos](M2Object * m2Candidate) {  // copies are safer, and the resulting code will be as quick.

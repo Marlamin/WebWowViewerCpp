@@ -35,6 +35,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/3rdparty/mathfu)
 
+set(TBB_DIR ${PROJECT_SOURCE_DIR}/3rdparty/tbb/cmake)
+add_subdirectory(${PROJECT_SOURCE_DIR}/3rdparty/pstl)
+
+
 if (NOT CMAKE_NDK_BUILD MATCHES 1)
     include_directories(${PROJECT_SOURCE_DIR}/3rdparty/glew_win/include)
     if (WIN32)
@@ -168,6 +172,7 @@ if (NOT CMAKE_NDK_BUILD MATCHES 1)
     set_property(TARGET WoWViewerLib PROPERTY CXX_STANDARD 17)
 endif()
 target_link_libraries(WoWViewerLib ${GLEW_LIBRARIES})
+target_link_libraries(WoWViewerLib pstl::ParallelSTL)
 #target_link_libraries(WoWViewerLib gomp) //never use it. It makes uniform buffers screwed up for some reason
 
 if (NOT CMAKE_NDK_BUILD MATCHES 1)
@@ -179,4 +184,10 @@ else()
 endif()
 
 target_include_directories(WoWViewerLib
-        PRIVATE ${PROJECT_SOURCE_DIR}/3rdparty/mathfu/include ${PROJECT_SOURCE_DIR}/3rdparty/mathfu/dependencies/vectorial/include)
+        PRIVATE ${PROJECT_SOURCE_DIR}/3rdparty/mathfu/include
+        PRIVATE ${PROJECT_SOURCE_DIR}/3rdparty/mathfu/dependencies/vectorial/include
+        PRIVATE ${PROJECT_SOURCE_DIR}/3rdparty/pstl/include
+        PRIVATE ${PROJECT_SOURCE_DIR}/3rdparty/tbb/include
+        )
+
+#target_include_directories()

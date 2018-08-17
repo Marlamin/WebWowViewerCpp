@@ -149,9 +149,9 @@ WoWSceneImpl::WoWSceneImpl(Config *config, IFileRequest * requestProcessor, int 
 //    currentScene = new Map(this, 530, "Expansion01");
 //    m_firstCamera.setCameraPos(972, 2083, 0); //Lost isles template
 //    m_firstCamera.setCameraPos(-834, 4500, 0); //Dalaran 2
-//    m_firstCamera.setCameraPos(-719, 2772, 317); //Near the black tower
+    m_firstCamera.setCameraPos(-719, 2772, 317); //Near the black tower
 //    m_firstCamera.setCameraPos( 4054, 7370, 27); // Druid class hall
-//    currentScene = new Map(this, 1220, "Troll Raid");
+    currentScene = new Map(this, 1220, "Troll Raid");
 //    currentScene = new Map(this, 0, "BrokenShoreBattleshipFinale");
 
 //    m_firstCamera.setCameraPos(-1663, 5098, 27);
@@ -205,8 +205,8 @@ WoWSceneImpl::WoWSceneImpl(Config *config, IFileRequest * requestProcessor, int 
 //    currentScene = new Map(this, 0, "Azeroth");
 //
 //   m_firstCamera.setCameraPos(-5025, -807, 500); //Ironforge
-   m_firstCamera.setCameraPos(0, 0, 200);
-    currentScene = new Map(this, 0, "Azeroth");
+//   m_firstCamera.setCameraPos(0, 0, 200);
+//    currentScene = new Map(this, 0, "Azeroth");
 //
 //    m_firstCamera.setCameraPos(-876, 775, 200); //Zaldalar
 //    currentScene = new Map(this, 1642, "Zandalar");
@@ -431,25 +431,26 @@ WoWSceneImpl::WoWSceneImpl(Config *config, IFileRequest * requestProcessor, int 
     db2LightData = new DB2LightData(db2Cache.get("dbfilesclient/LightData.db2"));
     db2WmoAreaTable = new DB2WmoAreaTable(db2Cache.get("dbfilesclient/WmoAreaTable.db2"));
 
-//    g_globalThreadsSingleton.loadingResourcesThread = std::thread([&]() {
-//        using namespace std::chrono_literals;
-//
-//        while (true) {
-//            std::this_thread::sleep_for(1ms);
-//            this->adtObjectCache.processCacheQueue(1000);
-//            this->wdtCache.processCacheQueue(1000);
-//            this->wdlCache.processCacheQueue(1000);
-//            this->wmoGeomCache.processCacheQueue(1000);
-//            this->wmoMainCache.processCacheQueue(100);
-//            this->m2GeomCache.processCacheQueue(1000);
-//            this->skinGeomCache.processCacheQueue(1000);
-//            this->textureCache.processCacheQueue(1000);
-//            this->db2Cache.processCacheQueue(1000);
-//        }
-//    });
+    /*
+    g_globalThreadsSingleton.loadingResourcesThread = std::thread([&]() {
+        using namespace std::chrono_literals;
+
+        while (true) {
+            std::this_thread::sleep_for(1ms);
+            this->adtObjectCache.processCacheQueue(1000);
+            this->wdtCache.processCacheQueue(1000);
+            this->wdlCache.processCacheQueue(1000);
+            this->wmoGeomCache.processCacheQueue(1000);
+            this->wmoMainCache.processCacheQueue(100);
+            this->m2GeomCache.processCacheQueue(1000);
+            this->skinGeomCache.processCacheQueue(1000);
+            this->textureCache.processCacheQueue(1000);
+            this->db2Cache.processCacheQueue(1000);
+        }
+    });*/
 
 
-/*
+
     g_globalThreadsSingleton.cullingAndUpdateThread = std::thread(([&](){
         using namespace std::chrono_literals;
         std::unique_lock<std::mutex> localLockNextMeshes (m_lockNextMeshes,std::defer_lock);
@@ -466,7 +467,7 @@ WoWSceneImpl::WoWSceneImpl(Config *config, IFileRequest * requestProcessor, int 
             localLockNextMeshes.unlock();
         }
     }));
-*/
+
 }
 
 void WoWSceneImpl::initGlContext() {
@@ -773,7 +774,7 @@ void WoWSceneImpl::draw(animTime_t deltaTime) {
 
     struct timespec cullingAndUpdateStart, cullingAndUpdateEnd;
 //    clock_gettime(CLOCK_MONOTONIC, &cullingAndUpdateStart);
-    DoCulling();
+//    DoCulling();
 //    m_currentFrameParams = m_nextFrameParams;
 //    clock_gettime(CLOCK_MONOTONIC, &cullingAndUpdateEnd);
 //

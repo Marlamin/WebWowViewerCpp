@@ -1,7 +1,8 @@
 //
 // Created by deamon on 22.06.17.
 //
-
+#include <pstl/algorithm>
+#include <pstl/execution>
 #include <locale>
 #include <iomanip>
 #include "m2Object.h"
@@ -14,6 +15,8 @@
 #include "m2Helpers/M2MeshBufferUpdater.h"
 #include "../../../gapi/meshes/GM2Mesh.h"
 #include "../../../gapi/GOcclusionQuery.h"
+
+
 
 //Legion shader stuff
 
@@ -837,6 +840,7 @@ void M2Object::update(double deltaTime, mathfu::vec3 &cameraPos, mathfu::mat4 &v
 
     mathfu::mat4 viewMatInv = viewMat.Inverse();
 
+    /*
     for (int i = minParticle; i < maxParticle; i++) {
         auto *peRecord = m_m2Geom->m_m2Data->particle_emitters.getElement(i);
 
@@ -849,7 +853,7 @@ void M2Object::update(double deltaTime, mathfu::vec3 &cameraPos, mathfu::mat4 &v
 
         particleEmitters[i]->Update(deltaTime * 0.001 , transformMat, viewMatInv.TranslationVector3D());
         particleEmitters[i]->prepearBuffers(viewMat);
-    }
+    } */
 
     this->sortMaterials(viewMat);
 }
@@ -1075,7 +1079,7 @@ void M2Object::createBoundingBoxMesh() {
 
     boundingBoxMesh = m_api->getDevice()->createMesh(meshTemplate);
 
-    occlusionQuery = m_api->getDevice()->createQuery(boundingBoxMesh);
+//    occlusionQuery = m_api->getDevice()->createQuery(boundingBoxMesh);
 
 }
 
@@ -1180,6 +1184,26 @@ void M2Object::collectMeshes(std::vector<HGMesh> &renderedThisFrame, int renderO
     int minBatch = m_api->getConfig()->getM2MinBatch();
     int maxBatch = std::min(m_api->getConfig()->getM2MaxBatch(), (const int &) this->m_meshArray.size());
 
+//    std::vector<bool> drawResults = std::vector<bool>(this->m_meshArray.size(), false);
+//    std::for_each(
+//        std::execution::par_unseq,
+//        &this->m_meshArray[minBatch],
+//        &this->m_meshArray[maxBatch],
+//        [this, m2File, skinData, renderOrder, &drawResults](HGM2Mesh &mesh) {
+//            if (M2MeshBufferUpdater::updateBufferForMat(mesh, *this, m_materialArray[i], m2File, skinData)) {
+//                this->m_meshArray[i]->setRenderOrder(renderOrder);
+//                drawResults[i] = true;
+//            }
+//
+//
+//        }
+//    );
+//    for (int i = minBatch; i < maxBatch; i++) {
+//        if (drawResults[i]) {
+//            renderedThisFrame.push_back(this->m_meshArray[i]);
+//        }
+//    }
+
     for (int i = minBatch; i < maxBatch; i++) {
         if (M2MeshBufferUpdater::updateBufferForMat(this->m_meshArray[i], *this, m_materialArray[i], m2File, skinData)) {
             this->m_meshArray[i]->setRenderOrder(renderOrder);
@@ -1187,7 +1211,8 @@ void M2Object::collectMeshes(std::vector<HGMesh> &renderedThisFrame, int renderO
         }
     }
 
-    renderedThisFrame.push_back(occlusionQuery);
+
+//    renderedThisFrame.push_back(occlusionQuery);
 }
 
 void M2Object::initAnimationManager() {
