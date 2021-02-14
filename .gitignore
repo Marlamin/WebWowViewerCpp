@@ -4,3 +4,6 @@ cache__
 cache_old
 cmake-build-*
 venv
+emsdk
+build
+project.*
