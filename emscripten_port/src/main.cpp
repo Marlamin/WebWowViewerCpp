@@ -545,9 +545,9 @@ extern "C" {
     }
 
     EMSCRIPTEN_KEEPALIVE
-    void setMeshIdArray(uint8_t *meshIds, int length) {
+    void setMeshIdArray(int8_t *meshIds, int length) {
         if (currentScene != nullptr) {
-            auto meshIdsVec = std::vector<uint8_t>(meshIds, meshIds+length);
+            auto meshIdsVec = std::vector<int8_t>(meshIds, meshIds+length);
             currentScene->setMeshIds(meshIdsVec);
         }
     }

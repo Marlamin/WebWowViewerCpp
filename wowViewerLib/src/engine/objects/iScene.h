@@ -15,12 +15,12 @@ class IScene {
 public:
     virtual ~IScene() = 0;
     virtual void setReplaceTextureArray(std::vector<int> &replaceTextureArray) = 0;
-    virtual void setMeshIdArray(std::vector<uint8_t> &meshIds) = 0;
+    virtual void setMeshIdArray(std::vector<int8_t> &meshIds) = 0;
     virtual void setReplaceParticleColors(std::array<std::array<mathfu::vec4, 3>, 3> &particleColorReplacement) {};
     virtual void resetReplaceParticleColor() {};
 
     virtual void setAnimationId(int animationId) = 0;
-    virtual void setMeshIds(std::vector<uint8_t> &meshIds) = 0;
+    virtual void setMeshIds(std::vector<int8_t> &meshIds) = 0;
     virtual void resetAnimation() = 0;
 
     virtual void produceDrawStage(HDrawStage &resultDrawStage, HUpdateStage &updateStage, std::vector<HGUniformBufferChunk> &additionalChunks) = 0;

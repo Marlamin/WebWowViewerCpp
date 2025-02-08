@@ -751,7 +751,7 @@ void M2Object::setDiffuseColor(CImVector& value) {
     }
      */
 }
-void M2Object::setLoadParams (int skinNum, std::vector<uint8_t> meshIds, std::vector<HBlpTexture> replaceTextures) {
+void M2Object::setLoadParams (int skinNum, std::vector<int8_t> meshIds, std::vector<HBlpTexture> replaceTextures) {
     this->m_skinNum = skinNum;
     this->m_meshIds = meshIds;
     this->m_replaceTextures = replaceTextures;
@@ -1157,9 +1157,17 @@ bool M2Object::prepearMaterial(M2MaterialInst &materialData, int batchIndex) {
     {
         auto meshGroup = (skinSection->skinSectionId / 100);
         if ((meshGroup < this->m_meshIds.size()) && (skinSection->skinSectionId > 0) &&
-            (m_meshIds[meshGroup] != (skinSection->skinSectionId % 100))) {
+            (m_meshIds[meshGroup] != (skinSection->skinSectionId % 100)) && (m_meshIds[meshGroup] != -1)) {
             return false;
         }
+
+//	if ((meshGroup < this->m_meshIds.size()) && 
+ //   		(geoset > 0) &&
+  //  		(m_meshIds[meshGroup] != (geoset % 100)) &&
+   // 		(m_meshIds[meshGroup] != -1)
+ //  	) {
+  //  		continue;
+	//}
     }
 //        materialArray.push(materialData);
 
@@ -1968,7 +1976,7 @@ void M2Object::setReplaceTextures(std::vector<HBlpTexture> &replaceTextures) {
         createMeshes(); // recreate meshes
     }
 }
-void M2Object::setMeshIds(std::vector<uint8_t> &meshIds) {
+void M2Object::setMeshIds(std::vector<int8_t> &meshIds) {
     m_meshIds = meshIds;
 
     if (m_loaded) {

@@ -79,7 +79,7 @@ void M2Scene::setReplaceTextureArray(std::vector<int> &replaceTextureArray) {
     m_m2Object->setReplaceTextures(replaceTextures);
 }
 
-void M2Scene::setMeshIdArray(std::vector<uint8_t> &meshIds) {
+void M2Scene::setMeshIdArray(std::vector<int8_t> &meshIds) {
     m_m2Object->setMeshIds(meshIds);
 }
 
@@ -146,7 +146,7 @@ M2Scene::M2Scene(HApiContainer api, std::string m2Model, int cameraView) {
 
     auto  m2Object = std::make_shared<M2Object>(m_api);
     std::vector<HBlpTexture> replaceTextures = {};
-    std::vector<uint8_t> meshIds = {};
+    std::vector<int8_t> meshIds = {};
     m2Object->setLoadParams(0, meshIds, replaceTextures);
     m2Object->setModelFileName(m_m2Model);
     m2Object->createPlacementMatrix(mathfu::vec3(0,0,0), 0, mathfu::vec3(1,1,1), nullptr);
@@ -169,7 +169,7 @@ M2Scene::M2Scene(HApiContainer api, int fileDataId, int cameraView) {
 
     auto m2Object = std::make_shared<M2Object>(m_api);
     std::vector<HBlpTexture> replaceTextures = {};
-    std::vector<uint8_t> meshIds = {};
+    std::vector<int8_t> meshIds = {};
     m2Object->setLoadParams(0, meshIds, replaceTextures);
     m2Object->setModelFileId(fileDataId);
     m2Object->createPlacementMatrix(mathfu::vec3(0,0,0), 0, mathfu::vec3(1,1,1), nullptr);

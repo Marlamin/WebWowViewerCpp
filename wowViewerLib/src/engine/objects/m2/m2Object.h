@@ -116,7 +116,7 @@ private:
     mathfu::vec4 m_localDiffuseColorV = mathfu::vec4(0.0, 0.0, 0.0, 0.0);
     int m_useLocalDiffuseColor = -1;
     bool hasModf0x2Flag = false;
-    std::vector<uint8_t> m_meshIds;
+    std::vector<int8_t> m_meshIds;
     std::vector<HBlpTexture> m_replaceTextures;
     bool particleColorReplacementIsSet = false;
     std::array<std::array<mathfu::vec4, 3>, 3> m_particleColorReplacement;
@@ -192,11 +192,11 @@ public:
     const CAaBox &getAABB() { return aabb; };
     CAaBox getColissionAABB();;
 
-    void setLoadParams(int skinNum, std::vector<uint8_t> meshIds,
+    void setLoadParams(int skinNum, std::vector<int8_t> meshIds,
                        std::vector<HBlpTexture> replaceTextures);
 
     void setReplaceTextures(std::vector<HBlpTexture> &replaceTextures);
-    void setMeshIds(std::vector<uint8_t> &meshIds);
+    void setMeshIds(std::vector<int8_t> &meshIds);
     void setReplaceParticleColors(std::array<std::array<mathfu::vec4, 3>, 3> &particleColorReplacement);
     void resetReplaceParticleColor();
     bool getReplaceParticleColors(std::array<std::array<mathfu::vec4, 3>, 3> &particleColorReplacement);

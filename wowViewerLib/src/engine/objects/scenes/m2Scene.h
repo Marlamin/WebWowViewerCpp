@@ -41,7 +41,7 @@ public:
     void setAnimationId(int animationId) override {
         m_m2Object->setAnimationId(animationId);
     };
-    void setMeshIds(std::vector<uint8_t> &meshIds) override {
+    void setMeshIds(std::vector<int8_t> &meshIds) override {
         m_m2Object->setMeshIds(meshIds);
     };
     void resetAnimation() override {
@@ -49,7 +49,7 @@ public:
     }
 
     void setReplaceTextureArray(std::vector<int> &replaceTextureArray) override;
-    void setMeshIdArray(std::vector<uint8_t> &meshIds) override ;
+    void setMeshIdArray(std::vector<int8_t> &meshIds) override ;
     void setReplaceParticleColors(std::array<std::array<mathfu::vec4, 3>, 3> &particleColorReplacement) override;
     void resetReplaceParticleColor() override;
     void doPostLoad(HCullStage &cullStage) override;

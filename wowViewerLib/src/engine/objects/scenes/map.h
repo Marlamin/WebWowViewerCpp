@@ -221,7 +221,7 @@ public:
 	};
 
     void setReplaceTextureArray(std::vector<int> &replaceTextureArray) override {};
-    void setMeshIdArray(std::vector<uint8_t> &meshIds) override {};
+    void setMeshIdArray(std::vector<int8_t> &meshIds) override {};
     void checkCulling(HCullStage &cullStage) override;
 
     void setMandatoryADTs(std::vector<std::array<uint8_t, 2>> &mandatoryADTs) override {
@@ -229,7 +229,7 @@ public:
     }
     void getAdtAreaId(const mathfu::vec4 &cameraPos, int &areaId, int &parentAreaId) override;
     void setAnimationId(int animationId) override {};
-    void setMeshIds(std::vector<uint8_t> &meshIds) override {};
+    void setMeshIds(std::vector<int8_t> &meshIds) override {};
 
     void resetAnimation() override {
 
