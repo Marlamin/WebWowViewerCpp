@@ -883,7 +883,7 @@ void GDeviceGL20::clearScreen() {
     glEnable(GL_SCISSOR_TEST);
 //    glClearColor(0.0, 0.0, 0.0, 0.0);
 //    glClearColor(0.25, 0.06, 0.015, 0.0);
-    glClearColor(clearColor[0], clearColor[1], clearColor[2], 1);
+    glClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
     //glClearColor(fogColor[0], fogColor[1], fogColor[2], 1);
 //    glClearColor(0,0,0,1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -945,6 +945,7 @@ void GDeviceGL20::drawStageAndDeps(HDrawStage drawStage) {
         clearColor[0] = drawStage->clearColor[0];
         clearColor[1] = drawStage->clearColor[1];
         clearColor[2] = drawStage->clearColor[2];
+        clearColor[3] = drawStage->clearColor[3];
         this->clearScreen();
     }
 

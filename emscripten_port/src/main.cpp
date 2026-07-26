@@ -313,6 +313,9 @@ HDrawStage createSceneDrawStage(HFrameScenario sceneScenario, int width, int hei
     }
 
     auto clearColor = apiContainer.getConfig()->clearColor;
+    if (isScreenshot) {
+        clearColor[3] = 0.0f;
+    }
 
     if (currentScene != nullptr) {
         ViewPortDimensions dimensions = {{0, 0}, {width, height}};

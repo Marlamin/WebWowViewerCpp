@@ -169,7 +169,7 @@ protected:
     HGTexture m_blackPixelTexture;
     HGTexture m_whitePixelTexture;
 
-    float clearColor[3] = {0,0,0};
+    float clearColor[4] = {0,0,0,1};
 
 public:
     struct M2ShaderCacheRecordHasher {

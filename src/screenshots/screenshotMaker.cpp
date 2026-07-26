@@ -209,7 +209,7 @@ void saveDataFromDrawStage(const HFrameBuffer& fb,
             buffer[ind2[0]] = b;
             buffer[ind2[1]] = g;
             buffer[ind2[2]] = r;
-            buffer[ind2[3]] = 255;
+            buffer[ind2[3]] = a;
         }
     }
 

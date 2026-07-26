@@ -1601,6 +1601,9 @@ HDrawStage createSceneDrawStage(HFrameScenario sceneScenario, int width, int hei
     }
 
     auto clearColor = apiContainer.getConfig()->clearColor;
+    if (isScreenshot) {
+        clearColor[3] = 0.0f;
+    }
 
     if (cameraMatricesRenderingDebug && swapDebugCamera) {
         std::swap(cameraMatricesRendering, cameraMatricesRenderingDebug);
