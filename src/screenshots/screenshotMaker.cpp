@@ -3,6 +3,7 @@
 //
 #include "screenshotMaker.h"
 #include "lodepng/lodepng.h"
+#include <algorithm>
 #include <fstream>
 //#ifndef __EMSCRIPTEN__
 //void saveScreenshot(const std::string &name, int width, int height, std::vector <uint8_t> &rgbaBuff) {
@@ -209,7 +210,7 @@ void saveDataFromDrawStage(const HFrameBuffer& fb,
             buffer[ind2[0]] = b;
             buffer[ind2[1]] = g;
             buffer[ind2[2]] = r;
-            buffer[ind2[3]] = a;
+            buffer[ind2[3]] = std::max(a, std::max(r, std::max(g, b))); // not straight-up alpha here, check rgb channels for pixels too in case there's particles or outlines
         }
     }
 

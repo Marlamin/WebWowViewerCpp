@@ -314,6 +314,9 @@ HDrawStage createSceneDrawStage(HFrameScenario sceneScenario, int width, int hei
 
     auto clearColor = apiContainer.getConfig()->clearColor;
     if (isScreenshot) {
+        clearColor[0] = 0.0f;
+        clearColor[1] = 0.0f;
+        clearColor[2] = 0.0f;
         clearColor[3] = 0.0f;
     }
 
