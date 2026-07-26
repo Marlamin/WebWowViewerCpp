@@ -604,6 +604,19 @@ extern "C" {
         auto controllable = apiContainer->camera;
         controllable->setCameraPos(x,y,z);
     }
+
+    EMSCRIPTEN_KEEPALIVE
+    void getScenePos(float *pos) {
+        auto controllable = apiContainer->camera;
+        controllable->getCameraPosition(pos);
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void setSceneLookAt(float x, float y, float z) {
+        auto controllable = apiContainer->camera;
+        controllable->setCameraLookAt(x,y,z);
+    }
+
     extern void offerFileAsDownload(const char *filename, int filename_len);
 
     EMSCRIPTEN_KEEPALIVE
