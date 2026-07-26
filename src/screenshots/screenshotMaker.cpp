@@ -176,7 +176,7 @@ static bool endsWith3(std::string_view str, std::string_view suffix)
 void saveDataFromDrawStage(const HFrameBuffer& fb,
                            const std::string& screenshotFileName,
                            int screenshotWidth, int screenshotHeight,
-                           std::vector <uint8_t> &buffer) {
+                           std::vector <uint8_t> &buffer, bool transparent) {
     if (fb == nullptr)
         return;
 
@@ -210,7 +210,12 @@ void saveDataFromDrawStage(const HFrameBuffer& fb,
             buffer[ind2[0]] = b;
             buffer[ind2[1]] = g;
             buffer[ind2[2]] = r;
-            buffer[ind2[3]] = std::max(a, std::max(r, std::max(g, b))); // not straight-up alpha here, check rgb channels for pixels too in case there's particles or outlines
+
+            if(transparent){
+                buffer[ind2[3]] = std::max(a, std::max(r, std::max(g, b))); // not straight-up alpha here, check rgb channels for pixels too in case there's particles or outlines
+            }else{
+                buffer[ind2[3]] = 255;
+            }
         }
     }
 

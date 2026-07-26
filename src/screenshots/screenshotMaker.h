@@ -16,5 +16,5 @@ void saveScreenshotLodePng(const std::string &name, int width, int height, std::
 void saveDataFromDrawStage(const HFrameBuffer& fb,
                            const std::string& screenshotFileName,
                            int screenshotWidth, int screenshotHeight,
-                           std::vector <uint8_t> &buffer);
+                           std::vector <uint8_t> &buffer, bool transparent = false);
 #endif //AWEBWOWVIEWERCPP_SCREENSHOTMAKER_H

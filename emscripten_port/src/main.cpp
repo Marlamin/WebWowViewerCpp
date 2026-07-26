@@ -33,6 +33,7 @@ std::shared_ptr<ICamera> firstPersonCamera = std::make_shared<FirstPersonCamera>
 std::string screenshotFilename = "";
 HDrawStage screenshotDS = nullptr;
 bool needToMakeScreenshot = false;
+bool screenshotTransparent = false;
 int screenShotWidth = 100;
 int screenShotHeight = 100;
 int screenshotFrame = -1;
@@ -313,7 +314,7 @@ HDrawStage createSceneDrawStage(HFrameScenario sceneScenario, int width, int hei
     }
 
     auto clearColor = apiContainer.getConfig()->clearColor;
-    if (isScreenshot) {
+    if (isScreenshot && screenshotTransparent) {
         clearColor[0] = 0.0f;
         clearColor[1] = 0.0f;
         clearColor[2] = 0.0f;
@@ -431,9 +432,10 @@ extern "C" {
     }
 
     EMSCRIPTEN_KEEPALIVE
-    void createScreenshot() {
+    void createScreenshot(bool transparent = false) {
         screenshotFilename = "screenshot.png";
         needToMakeScreenshot = true;
+        screenshotTransparent = transparent;
     }
 
     EMSCRIPTEN_KEEPALIVE
@@ -528,7 +530,7 @@ extern "C" {
 
     EMSCRIPTEN_KEEPALIVE
     void setClearColor(float r, float g, float b) {
-        apiContainer->getConfig()->clearColor = mathfu::vec4(r,g,b,0.0);
+        apiContainer->getConfig()->clearColor = mathfu::vec4(r,g,b,1.0);
     }
     EMSCRIPTEN_KEEPALIVE
     void enablePortalCulling(bool value) {
@@ -650,7 +652,7 @@ extern "C" {
             if (screenshotFrame + 5 <= apiContainer->hDevice->getFrameNumber()) {
                 std::vector<uint8_t> buffer = std::vector<uint8_t>(screenShotWidth*screenShotHeight*4+1);
 
-                saveDataFromDrawStage(screenshotDS->target, screenshotFilename, screenShotWidth, screenShotHeight, buffer);
+                saveDataFromDrawStage(screenshotDS->target, screenshotFilename, screenShotWidth, screenShotHeight, buffer, screenshotTransparent);
                 offerFileAsDownload(screenshotFilename.c_str(), screenshotFilename.size());
                 screenshotDS = nullptr;
             }
