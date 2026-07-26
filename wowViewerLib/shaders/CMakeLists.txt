@@ -6,7 +6,7 @@ endif()
 
 set(APP_RUN_PREFIX "")
 if (EMSCRIPTEN)
-    set(APP_RUN_PREFIX node --experimental-wasm-simd)
+    set(APP_RUN_PREFIX node)
 endif()
 
 message(INFO "GLSL_TARGET_FOLDER = ${GLSL_TARGET_FOLDER}")
