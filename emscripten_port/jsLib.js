@@ -16,11 +16,9 @@ mergeInto(LibraryManager.library, {
     offerFileAsDownload : function(filename_ptr, filename_len) {
         let mime = "application/octet-stream";
 
-        let filename = AsciiToString(filename_ptr);
+        let filename = UTF8ToString(filename_ptr);
 
         let content = Module.FS.readFile(filename);
-        console.log(`Offering download of "${filename}", with ${content.length} bytes...`);
-
         var a = document.createElement('a');
         a.download = filename;
         a.href = URL.createObjectURL(new Blob([content], {type: mime}));

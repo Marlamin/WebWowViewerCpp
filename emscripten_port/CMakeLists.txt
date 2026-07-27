@@ -18,7 +18,6 @@ message( EMSCRIPTEN_ROOT_PATH = ${EMSCRIPTEN_ROOT_PATH})
 option(COMPILE_WITH_SIMD "Compile with experimental WASM SIMD support" OFF)
 message(COMPILE_WITH_SIMD = ${COMPILE_WITH_SIMD})
 
-set(ADDITIONAL_COMPILATION_FLAGS "--emit-symbol-map")
 #set(ADDITIONAL_COMPILATION_FLAGS "${ADDITIONAL_COMPILATION_FLAGS} -gsource-map ")
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${ADDITIONAL_COMPILATION_FLAGS}" )
@@ -93,22 +92,18 @@ target_link_libraries(project zlibstatic)
 target_link_libraries(project WoWViewerLib)
 target_link_libraries(project staticZipper)
 
-
 target_link_options(project PUBLIC "SHELL: --pre-js ${CMAKE_CURRENT_SOURCE_DIR}/prejs.js --js-library ${CMAKE_CURRENT_SOURCE_DIR}/jsLib.js")
 target_link_options(project PUBLIC "SHELL: -s USE_GLFW=3 --preload-file glsl -s ALLOW_MEMORY_GROWTH=1")
 target_link_options(project PUBLIC "SHELL: -s TOTAL_MEMORY=40MB")
 target_link_options(project PUBLIC "SHELL: -s FETCH=1 -s WASM=1 -s USE_WEBGL2=1 -s FULL_ES3=1")
 
 target_link_options(project PUBLIC "SHELL: -fno-rtti ")
-target_link_options(project PUBLIC "SHELL: -s EXPORTED_RUNTIME_METHODS=[\"FS\"]")
-
+target_link_options(project PUBLIC "SHELL: -s EXPORTED_RUNTIME_METHODS=[\"FS\",\"UTF8ToString\"]")
 target_link_options(project PUBLIC "SHELL: -s ENVIRONMENT=\"web\" " )
 target_link_options(project PUBLIC "SHELL: -s USE_PTHREADS=0")
 target_link_options(project PUBLIC "SHELL: --bind ")
 #target_link_options(project PUBLIC "SHELL: -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=2")
 #target_link_options(project PUBLIC "SHELL: -s ENVIRONMENT=\"web,worker\" " )
-
-
 
 set_target_properties(project
         PROPERTIES
