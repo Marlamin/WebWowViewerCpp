@@ -2,6 +2,8 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include <chrono>
+#include <thread>
 #include "RequestProcessor.h"
 
 std::mutex requestMtx;           // mutex for critical section
@@ -45,14 +47,13 @@ RequestProcessor::requestFile(std::string &fileName, CacheHolderType holderType,
 }
 
 void RequestProcessor::processRequests (bool calledFromThread) {
-    using namespace std::chrono_literals;
     // critical section (exclusive access to std::cout signaled by locking lck):
     std::unique_lock<std::mutex> lck (requestMtx,std::defer_lock);
 
     if (calledFromThread){
         while (!this->isTerminating) {
             if (m_requestQueue.empty()) {
-                std::this_thread::sleep_for(1ms);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 continue;
             }
 

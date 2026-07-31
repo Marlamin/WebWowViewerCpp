@@ -195,7 +195,7 @@ void DatabaseUpdateWorkflow::db2UpdateLogic() {
         std::shared_ptr<CSQLLiteExporter> csqlLiteExporter = std::make_shared<CSQLLiteExporter>("export.db3");
 
         addTableLambda = [fileDBDStorage, csqlLiteExporter](std::string tableName, std::shared_ptr<Db2File> db2File) -> bool {
-            std::shared_ptr<WDC3::DB2Base> db2Base = std::make_shared<WDC3::DB2Base>();
+            std::shared_ptr<WDC3::DB2Ver3> db2Base = std::make_shared<WDC3::DB2Ver3>();
             db2Base->process(db2File->getContent(), "");
 
             DBDFile::BuildConfig *buildConfig = nullptr;
