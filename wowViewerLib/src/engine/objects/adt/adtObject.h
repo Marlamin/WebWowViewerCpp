@@ -163,10 +163,10 @@ private:
     HGTexture getAdtSpecularTexture(int textureId);
 
     struct AnimTextures {
-        std::array<mathfu::mat4, 4> animTexture;
+        std::array<mathfu::mat4, 8> animTexture;
     };
     struct AnimTrans {
-        std::array<mathfu::vec2, 4> transVectors;
+        std::array<mathfu::vec2, 8> transVectors;
     };
     std::vector<AnimTextures> texturesPerMCNK;
 

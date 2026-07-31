@@ -492,7 +492,7 @@ void AdtFile::processTexture(const MPHDFlags &wdtObjFlags, int i, std::vector<ui
     uint8_t* alphaArray = mcnkObj.mcal;
     PointerChecker<SMLayer> &layers = mcnkObj.mcly;
 
-    currentLayer = std::vector<uint8_t>((64*4) * 64, 0);
+    currentLayer = std::vector<uint8_t>((64*8) * 64, 0);
     if (layers == nullptr || alphaArray == nullptr) return;
 
 //    for (int j = 0; j < mapTile[i].nLayers; j++ ) {

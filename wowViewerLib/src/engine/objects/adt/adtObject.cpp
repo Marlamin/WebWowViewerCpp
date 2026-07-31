@@ -667,7 +667,7 @@ void AdtObject::createMeshes() {
             aTemplate.ubo[3] = adtWideBlockPS;
             aTemplate.ubo[4] = m_api->hDevice->createUniformBufferChunk(sizeof(ADT::meshWideBlockPS));
 
-            aTemplate.textureCount = 9;
+            aTemplate.textureCount = 18;
 
             aTemplate.texture = std::vector<HGTexture>(aTemplate.textureCount, nullptr);
 
@@ -675,7 +675,7 @@ void AdtObject::createMeshes() {
             aTemplate.ubo[4]->setUpdateHandler([&api, adtFileTex, noLayers, chunkIndex, this](IUniformBufferChunk *self, const HFrameDepedantData &frameDepedantData) {
                 auto &blockPS = self->getObject<ADT::meshWideBlockPS>();
 
-                for (int j = 0; j < 4; j++) {
+                for (int j = 0; j < 8; j++) {
                     blockPS.uHeightOffset[j] = 0.0f;
                     blockPS.uHeightScale[j] = 1.0f;
                     blockPS.animationMat[j] = mathfu::mat4::Identity();
@@ -732,7 +732,6 @@ void AdtObject::createMeshes() {
                     auto &layerDef = m_adtFileTex->mcnkStructs[i].mcly[j];
 
                     HGTexture layer_x = getAdtTexture(m_adtFileTex->mcnkStructs[i].mcly[j].textureId);
-//            BlpTexture &layer_spec = getAdtSpecularTexture(m_adtFileTex->mcnkStructs[i].mcly[j].textureId);
                     aTemplate.texture[j] = layer_x;
                 }
             } else {
@@ -750,7 +749,7 @@ void AdtObject::createMeshes() {
 void AdtObject::loadAlphaTextures() {
     //int chunkCount = m_adtFile->mcnkRead+1;
     int chunkCount = m_adtFileTex->mcnkRead+1;
-    int maxAlphaTexPerChunk = 4;
+    int maxAlphaTexPerChunk = 8; // is this even used?
     int alphaTexSize = 64;
 
     int texWidth = alphaTexSize;

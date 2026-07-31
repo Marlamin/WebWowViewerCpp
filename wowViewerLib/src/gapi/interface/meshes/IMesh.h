@@ -71,8 +71,8 @@ public:
     int end;
     DrawElementMode element;
     unsigned int textureCount;
-    std::vector<HGTexture> texture = std::vector<HGTexture>(6, nullptr);
-    std::array<HGUniformBufferChunk, 6> ubo = {nullptr,nullptr,nullptr,nullptr,nullptr,nullptr};
+    std::vector<HGTexture> texture = std::vector<HGTexture>(16, nullptr);
+    std::array<HGUniformBufferChunk, 16> ubo = {nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr};
 
     bool scissorEnabled = false;
     std::array<int, 2> scissorOffset = {0,0};

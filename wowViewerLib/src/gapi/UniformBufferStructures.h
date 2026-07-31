@@ -162,9 +162,9 @@ namespace ADT {
     };
 
     struct meshWideBlockPS {
-        float uHeightScale[4];
-        float uHeightOffset[4];
-        mathfu::mat4 animationMat[4];
+        float uHeightScale[8];
+        float uHeightOffset[8];
+        mathfu::mat4 animationMat[8];
     };
 }
 
