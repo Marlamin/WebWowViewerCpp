@@ -1,9 +1,6 @@
 [submodule "wowViewerLib/3rdparty/mathfu"]
 	path = wowViewerLib/3rdparty/mathfu
 	url = https://github.com/google/mathfu.git
-[submodule "3rdparty/zlib"]
-	path = 3rdparty/zlib
-	url = https://github.com/madler/zlib
 [submodule "wowViewerLib/shaders/3rdparty/glsllang"]
 	path = wowViewerLib/shaders/3rdparty/glsllang
 	url = https://github.com/KhronosGroup/glslang.git
@@ -11,15 +8,6 @@
 [submodule "wowViewerLib/shaders/3rdparty/spirv-cross"]
 	path = wowViewerLib/shaders/3rdparty/spirv-cross
 	url = https://github.com/KhronosGroup/SPIRV-Cross.git
-[submodule "3rdparty/filesystem_impl"]
-	path = 3rdparty/filesystem_impl
-	url = https://github.com/gulrak/filesystem.git
-[submodule "wowViewerLib/3rdparty/tinygltf"]
-	path = wowViewerLib/3rdparty/tinygltf
-	url = https://github.com/syoyo/tinygltf
-[submodule "emscripten_port/3rdparty/zipper"]
-	path = emscripten_port/3rdparty/zipper
-	url = https://github.com/sebastiandev/zipper.git
 [submodule "wowViewerLib/3rdparty/oneTbb"]
 	path = wowViewerLib/3rdparty/oneTbb
 	url = https://github.com/Deamon87/oneTBBWasm.git

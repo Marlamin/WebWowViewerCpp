@@ -191,7 +191,3 @@ void M2Scene::setReplaceParticleColors(std::array<std::array<mathfu::vec4, 3>, 3
 void M2Scene::resetReplaceParticleColor() {
     m_m2Object->resetReplaceParticleColor();
 }
-
-void M2Scene::exportScene(IExporter* exporter) {
-    exporter->addM2Object(m_m2Object);
-}

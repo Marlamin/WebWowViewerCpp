@@ -307,7 +307,6 @@ set(SOURCE_FILES
         src/engine/persistance/header/M2FileHeader.cpp
         src/engine/objects/m2/m2Helpers/CBoneMasterData.cpp
         src/engine/objects/m2/m2Helpers/CBoneMasterData.h
-        src/exporters/IExporter.h
         src/engine/objects/iScene.cpp
         src/engine/algorithms/C3Spline.cpp
         src/engine/algorithms/C3Spline.h

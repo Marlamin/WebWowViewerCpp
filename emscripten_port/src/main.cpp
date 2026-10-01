@@ -10,8 +10,6 @@
 #include "../../wowViewerLib/src/engine/objects/scenes/m2Scene.h"
 #include "../../wowViewerLib/src/engine/objects/scenes/wmoScene.h"
 #include "../../wowViewerLib/src/engine/objects/scenes/map.h"
-#include "../../src/exporters/gltfExporter/GLTFExporter.h"
-#include "../../3rdparty/filesystem_impl/include/ghc/filesystem.hpp"
 #include <iostream>
 #include <memory>
 #include <emscripten/threading.h>
@@ -19,7 +17,6 @@
 #include <emscripten/html5.h>
 #include <emscripten/bind.h>
 #include <GLFW/glfw3.h>
-#include <zipper/zipper.h>
 
 std::shared_ptr<ApiContainer> apiContainer = std::make_shared<ApiContainer>();
 HttpRequestProcessor *processor;
@@ -37,9 +34,6 @@ bool screenshotTransparent = false;
 int screenShotWidth = 100;
 int screenShotHeight = 100;
 int screenshotFrame = -1;
-
-std::shared_ptr<IExporter> exporter = nullptr;
-int exporterFramesReady = 0;
 
 int canvWidth = 640;
 int canvHeight = 480;
@@ -439,13 +433,6 @@ extern "C" {
     }
 
     EMSCRIPTEN_KEEPALIVE
-    void startExport() {
-        exporter = std::make_shared<GLTFExporter>("./gltf/");
-        currentScene->exportScene(exporter.get());
-
-    }
-
-    EMSCRIPTEN_KEEPALIVE
     void setNewUrls(char *url, char *urlFileId) {
         processor->setUrls(url, urlFileId);
         apiContainer->cacheStorage->actuallDropCache();
@@ -625,41 +612,6 @@ extern "C" {
 
         if (sceneComposer == nullptr) return;
         if (apiContainer->hDevice == nullptr) return;
-
-        if (exporter != nullptr && processor != nullptr) {
-            if (processor->completedAllJobs() && !apiContainer->hDevice->wasTexturesUploaded()) {
-                exporterFramesReady++;
-            }
-            if (exporterFramesReady > 5) {
-                std::string exportDir = "./gltf/";
-                if (!ghc::filesystem::is_directory(exportDir) || !ghc::filesystem::exists(exportDir)) {
-                    ghc::filesystem::create_directory(exportDir); // create src folder
-                }
-                exporter->saveToFile("model.gltf");
-                exporter = nullptr;
-
-                std::error_code errorCode;
-
-                //Add files to archive and download it
-                std::string archiveName = "export.zip";
-                ghc::filesystem::remove_all(archiveName, errorCode); //Delete file if exists
-
-                zipper::Zipper zipper(archiveName);
-
-                for (const auto& entry : ghc::filesystem::directory_iterator(exportDir)) {
-                    const auto filenameStr = entry.path().filename().string();
-                    if (entry.status().type() == ghc::filesystem::file_type::regular) {
-                        std::ifstream input1(exportDir+filenameStr);
-
-                        zipper.add(input1, filenameStr);
-                    }
-                }
-                zipper.close();
-                ghc::filesystem::remove_all(exportDir, errorCode); // Deletes one or more files recursively.
-
-                offerFileAsDownload(archiveName.c_str(), archiveName.size());
-            }
-        }
 
         if (screenshotDS != nullptr) {
             if (screenshotFrame + 5 <= apiContainer->hDevice->getFrameNumber()) {

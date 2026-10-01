@@ -56,8 +56,6 @@ public:
 
     int getCameraNum() override ;
     std::shared_ptr<ICamera> createCamera(int cameraNum) override;
-
-    void exportScene(IExporter* exporter) override;
 };
 
 

@@ -9,7 +9,6 @@
 #include "../persistance/header/M2FileHeader.h"
 #include "../DrawStage.h"
 #include "../SceneScenario.h"
-#include "../../exporters/IExporter.h"
 
 class IScene {
 public:
@@ -33,8 +32,6 @@ public:
 
     virtual int getCameraNum() = 0;
     virtual std::shared_ptr<ICamera> createCamera(int cameraNum) = 0;
-
-    virtual void exportScene(IExporter * exporter) {};
 
     virtual void setAdtBoundingBoxHolder(HADTBoundingBoxHolder &bbHolder) {};
     virtual void setMandatoryADTs(std::vector<std::array<uint8_t, 2>> &mandatoryADTs) {};
