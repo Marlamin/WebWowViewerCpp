@@ -1,24 +1,9 @@
-[submodule "3rdparty/zipper"]
-	path = 3rdparty/zipper
-	url = https://github.com/sebastiandev/zipper
-[submodule "wowViewerLib/mathfu"]
-	path = wowViewerLib/mathfu
-	url = https://github.com/google/mathfu.git
 [submodule "wowViewerLib/3rdparty/mathfu"]
 	path = wowViewerLib/3rdparty/mathfu
 	url = https://github.com/google/mathfu.git
-[submodule "3rdparty/glfw"]
-	path = 3rdparty/glfw
-	url = https://github.com/glfw/glfw
 [submodule "3rdparty/zlib"]
 	path = 3rdparty/zlib
 	url = https://github.com/madler/zlib
-[submodule "3rdparty/stormlib"]
-	path = 3rdparty/stormlib
-	url = https://github.com/ladislav-zezula/StormLib.git
-[submodule "3rdparty/casclib"]
-	path = 3rdparty/casclib
-	url = https://github.com/ladislav-zezula/CascLib.git
 [submodule "wowViewerLib/shaders/3rdparty/glsllang"]
 	path = wowViewerLib/shaders/3rdparty/glsllang
 	url = https://github.com/KhronosGroup/glslang.git
@@ -26,9 +11,6 @@
 [submodule "wowViewerLib/shaders/3rdparty/spirv-cross"]
 	path = wowViewerLib/shaders/3rdparty/spirv-cross
 	url = https://github.com/KhronosGroup/SPIRV-Cross.git
-[submodule "3rdparty/SQLiteCpp"]
-	path = 3rdparty/SQLiteCpp
-	url = https://github.com/SRombauts/SQLiteCpp.git
 [submodule "3rdparty/filesystem_impl"]
 	path = 3rdparty/filesystem_impl
 	url = https://github.com/gulrak/filesystem.git
@@ -38,9 +20,6 @@
 [submodule "emscripten_port/3rdparty/zipper"]
 	path = emscripten_port/3rdparty/zipper
 	url = https://github.com/sebastiandev/zipper.git
-[submodule "3rdparty/DBImporter"]
-	path = 3rdparty/DBImporter
-	url = https://github.com/Deamon87/DBImporter.git
 [submodule "wowViewerLib/3rdparty/oneTbb"]
 	path = wowViewerLib/3rdparty/oneTbb
 	url = https://github.com/Deamon87/oneTBBWasm.git
