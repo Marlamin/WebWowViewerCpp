@@ -319,15 +319,21 @@ HDrawStage createSceneDrawStage(HFrameScenario sceneScenario, int width, int hei
         ViewPortDimensions dimensions = {{0, 0}, {width, height}};
 
         HFrameBuffer fb = nullptr;
+        cullStage = sceneScenario->addCullStage(cameraMatricesCulling, currentScene);
+        auto updateStage = sceneScenario->addUpdateStage(cullStage, deltaTime*(1000.0f), cameraMatricesRendering);
+
         if (isScreenshot) {
             fb = apiContainer.hDevice->createFrameBuffer(width, height,
                                                          {ITextureFormat::itRGBA},
                                                          ITextureFormat::itDepth32,
                                                          apiContainer.hDevice->getMaxSamplesCnt(), 4);
+            screenshotDS = sceneScenario->addDrawStage(updateStage, currentScene, cameraMatricesRendering, {}, true, dimensions, true, isInfZSupported, clearColor, fb);
+            drawStageDependencies.push_back(screenshotDS);
+            screenShotWidth = width;
+            screenShotHeight = height;
+            screenshotFrame = apiContainer.hDevice->getFrameNumber();
         }
 
-        cullStage = sceneScenario->addCullStage(cameraMatricesCulling, currentScene);
-        auto updateStage = sceneScenario->addUpdateStage(cullStage, deltaTime*(1000.0f), cameraMatricesRendering);
         HDrawStage sceneDrawStage = sceneScenario->addDrawStage(updateStage, currentScene, cameraMatricesRendering, drawStageDependencies, true,
                                                                 dimensions,
                                                                 true, isInfZSupported, clearColor, fb);
@@ -631,28 +637,11 @@ extern "C" {
 
         HFrameScenario sceneScenario = std::make_shared<FrameScenario>();
         std::vector<HDrawStage> additionalDependencies = {};
-        if (needToMakeScreenshot)
-        {
-            HCullStage temp = nullptr;
-            screenShotWidth = canvWidth;
-            screenShotHeight = canvHeight;
-            std::vector<HDrawStage> deps = {};
-            auto drawStage = createSceneDrawStage(sceneScenario, screenShotWidth, screenShotHeight, 0, true, *apiContainer,
-                                                  currentScene,temp, deps);
-            if (drawStage != nullptr) {
-                additionalDependencies.push_back(drawStage);
-                screenshotDS = drawStage;
-                screenshotFrame = apiContainer->hDevice->getFrameNumber();
-            }
-            needToMakeScreenshot = false;
-        }
 
         HCullStage cullStage = nullptr;
         auto sceneDrawStage = createSceneDrawStage(sceneScenario, canvWidth, canvHeight, deltaTime,
-                                                   false, *apiContainer, currentScene, cullStage, additionalDependencies);
-
-
-
+                                                    needToMakeScreenshot, *apiContainer, currentScene, cullStage, additionalDependencies);
+        needToMakeScreenshot = false;
 
 //        try {
             sceneComposer->draw(sceneScenario);
