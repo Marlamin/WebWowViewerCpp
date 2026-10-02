@@ -69,13 +69,12 @@ set(My_Vectorize_Compile_Options "")
 
 message("ENABLE_SIMD = ${ENABLE_SIMD}")
 
-if (NOT EMSCRIPTEN)
-    find_package(Threads REQUIRED)
-endif ()
+find_package(Threads REQUIRED)
 
 SET(TBB_STRICTTBB_BUILD_SHARED 0)
 SET(TBB_STRICT OFF CACHE BOOL "")
 SET(TBB_TEST 0 CACHE BOOL "")
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 if (EMSCRIPTEN)
     add_definitions("-D__TBB_RESUMABLE_TASKS_USE_THREADS")
 endif ()

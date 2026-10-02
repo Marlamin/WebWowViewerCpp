@@ -35,6 +35,8 @@ int screenShotWidth = 100;
 int screenShotHeight = 100;
 int screenshotFrame = -1;
 
+float baseMovementSpeed = 1.0f;
+
 int canvWidth = 640;
 int canvHeight = 480;
 bool windowSizeChanged = false;
@@ -164,7 +166,7 @@ static void onKey(GLFWwindow* window, int key, int scancode, int action, int mod
                 controllable->startMovingDown();
                 break;
             case GLFW_KEY_LEFT_SHIFT:
-                controllable->setMovementSpeed(3.0f);
+                controllable->setMovementSpeed(baseMovementSpeed * 3.0f);
                 break;
             default:
                 break;
@@ -203,7 +205,7 @@ static void onKey(GLFWwindow* window, int key, int scancode, int action, int mod
                 apiContainer->camera->setCameraPos(0,0,0);
                 break;
             case GLFW_KEY_LEFT_SHIFT:
-                controllable->setMovementSpeed(1.0f);
+                controllable->setMovementSpeed(baseMovementSpeed * 1.0f);
                 break;
             default:
                 break;
@@ -551,6 +553,11 @@ extern "C" {
             auto meshIdsVec = std::vector<int8_t>(meshIds, meshIds+length);
             currentScene->setMeshIds(meshIdsVec);
         }
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void setMovementSpeed(float speed) {
+        baseMovementSpeed = speed;
     }
 
     EMSCRIPTEN_KEEPALIVE
