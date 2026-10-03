@@ -79,8 +79,10 @@ target_link_options(project PUBLIC "SHELL: --pre-js ${CMAKE_CURRENT_SOURCE_DIR}/
 target_link_options(project PUBLIC "SHELL: -s USE_GLFW=3 --preload-file glsl -s ALLOW_MEMORY_GROWTH=1")
 target_link_options(project PUBLIC "SHELL: -s TOTAL_MEMORY=40MB")
 target_link_options(project PUBLIC "SHELL: -s FETCH=1 -s WASM=1 -s USE_WEBGL2=1 -s FULL_ES3=1")
+target_link_options(project PUBLIC "SHELL: -gsource-map")
 
 target_link_options(project PUBLIC "SHELL: -fno-rtti ")
+target_link_options(project PUBLIC "SHELL: -emit-symbol-map ")
 target_link_options(project PUBLIC "SHELL: -s EXPORTED_FUNCTIONS=[\"_malloc\",\"_free\",\"_main\",\"UTF8ToString\"]")
 target_link_options(project PUBLIC "SHELL: -s EXPORTED_RUNTIME_METHODS=[\"FS\",\"HEAP8\",\"HEAPU8\",\"HEAP32\"]")
 target_link_options(project PUBLIC "SHELL: -s ENVIRONMENT=\"web\" " )
