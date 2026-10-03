@@ -5,33 +5,11 @@ include(CheckCXXCompilerFlag)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-set(LINK_GLEW 1)
-set(LINK_OGL2 1)
-set(LINK_OGL3 1)
-set(LINK_OGL4 0)
 set(LINK_EGL 1 PARENT_SCOPE)
 set(LINK_EGL 1)
-option(LINK_VULKAN "Enable Vulkan" ON)
 set(LINK_OPENMP 0)
 set(ENABLE_SIMD 1)
 option(EMSCRIPTEN_SIMD "Enable SIMD for Emscripten " OFF)
-
-
-if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    set(LINK_GLEW 0)
-endif()
-#MacOS system
-if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    set(LINK_OGL2 0)
-    set(LINK_GLEW 0)
-endif()
-if (MSVC)
-    add_definitions(-DNOMINMAX)
-endif()
-
-if (CMAKE_NDK_BUILD)
-    set(LINK_GLEW 0)
-ENDIF()
 
 if (NOT EGL_PATH)
     set(LINK_EGL 0 PARENT_SCOPE)
@@ -41,31 +19,18 @@ endif()
 
 if (EMSCRIPTEN)
     message(This is EMSCRIPTEN)
-    set(LINK_GLEW 0)
-    set(LINK_VULKAN OFF)
     set(LINK_OPENMP 0)
-    set(LINK_OGL4 0)
     if (NOT EMSCRIPTEN_SIMD)
         set(ENABLE_SIMD 0)
     endif()
 ENDIF()
 
-if (LINK_OGL2)
-    add_definitions(-DLINK_OGL2)
-endif()
 if (LINK_EGL)
     add_definitions(-DLINK_EGL)
     add_definitions(-DWITH_GLESv2)
 endif()
-if (LINK_OGL3)
-    add_definitions(-DLINK_OGL3)
-endif()
-if (LINK_OGL4)
-    add_definitions(-DLINK_OGL4)
-endif()
 
 set(My_Vectorize_Compile_Options "")
-
 
 message("ENABLE_SIMD = ${ENABLE_SIMD}")
 
@@ -75,9 +40,7 @@ SET(TBB_STRICTTBB_BUILD_SHARED 0)
 SET(TBB_STRICT OFF CACHE BOOL "")
 SET(TBB_TEST 0 CACHE BOOL "")
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-if (EMSCRIPTEN)
-    add_definitions("-D__TBB_RESUMABLE_TASKS_USE_THREADS")
-endif ()
+add_definitions("-D__TBB_RESUMABLE_TASKS_USE_THREADS")
 add_subdirectory(${PROJECT_SOURCE_DIR}/3rdparty/oneTbb EXCLUDE_FROM_ALL)
 
 option(BUILD_WITHOUT_CULLED_PORTAL_DRAWING "Build without drawing culled portals" ON)
@@ -91,30 +54,16 @@ endif(BUILD_WITHOUT_CULLED_PORTAL_DRAWING MATCHES ON)
  
 #set(CMAKE_C_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC")
 #set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC")
-if (EMSCRIPTEN)
-    message("EMSCRIPTEN ENABLE_SIMD = ${ENABLE_SIMD}")
-    if (ENABLE_SIMD)
-        set(My_Vectorize_Compile_Options "${My_Vectorize_Compile_Options};-msimd128;-msse2;-msse;-ftree-vectorize")
-    endif()
-else()
-    set(My_Vectorize_Compile_Options "${My_Vectorize_Compile_Options};-msse3;-mavx2;-ftree-vectorize")
-
-    if (NOT MSVC)
-        set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Wno-multichar")
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wno-multichar")
-
-        set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -g -O3" )
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g -O3")
-    endif()
+message("EMSCRIPTEN ENABLE_SIMD = ${ENABLE_SIMD}")
+if (ENABLE_SIMD)
+    set(My_Vectorize_Compile_Options "${My_Vectorize_Compile_Options};-msimd128;-msse2;-msse;-ftree-vectorize")
 endif()
-
 
 IF(CMAKE_BUILD_TYPE MATCHES DEBUG)
 ENDIF(CMAKE_BUILD_TYPE MATCHES DEBUG)
 
 IF(CMAKE_BUILD_TYPE MATCHES Release)
 ENDIF(CMAKE_BUILD_TYPE MATCHES Release)
-
 
 include(ExternalProject)
 
@@ -126,35 +75,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/3rdparty/mathfu EXCLUDE_FROM_ALL)
 
 message(CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM_NAME})
 string(TOUPPER ${CMAKE_SYSTEM_NAME} CMAKE_SYSTEM_NAME_LOWERCASE)
-if (LINK_GLEW)
-    if (WIN32)
-        MESSAGE(IT IS WINDOWS!!!!)
-
-        set(GLEW_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/3rdparty/glew_win/include)
-        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-            set(GLEW_LIBRARIES ${PROJECT_SOURCE_DIR}/3rdparty/glew_win/lib/Release/x64/glew32.lib )
-            set(GLEW_DLL "${PROJECT_SOURCE_DIR}/3rdparty/glew_win/bin/Release/x64/glew32.dll")
-        elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-            set(GLEW_LIBRARIES ${PROJECT_SOURCE_DIR}/3rdparty/glew_win/lib/Release/Win32/glew32.lib )
-            set(GLEW_DLL "${PROJECT_SOURCE_DIR}/3rdparty/glew_win/bin/Release/Win32/glew32.dll")
-        endif()
-    elseif(NOT CMAKE_SYSTEM_NAME_LOWERCASE MATCHES "ANDROID")
-
-        find_package(GLEW REQUIRED)
-        if (GLEW_FOUND)
-            set(glew_include ${GLEW_INCLUDE_DIRS})
-            include_directories(${GLEW_INCLUDE_DIRS})
-            link_libraries(${GLEW_LIBRARIES})
-        endif()
-    endif(WIN32)
-
-    set(GLEW_INCLUDE_DIRS ${GLEW_INCLUDE_DIRS} PARENT_SCOPE)
-    include_directories(${GLEW_INCLUDE_DIRS})
-else()
-endif(LINK_GLEW)
-
-
-
 
 set(SOURCE_FILES
         src/engine/shader/ShaderRuntimeData.cpp
@@ -320,45 +240,6 @@ set(SOURCE_FILES
         src/engine/algorithms/mathHelper_culling.cpp
         src/engine/algorithms/mathHelper_culling.h)
 
-if (LINK_OGL2)
-    set(OPENGL20_IMPLEMENTATION
-        src/gapi/ogl2.0/textures/GBlpTextureGL20.cpp
-        src/gapi/ogl2.0/textures/GBlpTextureGL20.h
-        src/gapi/ogl2.0/buffers/GVertexBufferDynamicGL20.cpp
-        src/gapi/ogl2.0/buffers/GVertexBufferGL20.cpp
-        src/gapi/ogl2.0/buffers/GVertexBufferGL20.h
-        src/gapi/ogl2.0/buffers/GIndexBufferGL20.cpp
-        src/gapi/ogl2.0/buffers/GIndexBufferGL20.h
-        src/gapi/ogl2.0/buffers/GUniformBufferGL20.cpp
-        src/gapi/ogl2.0/buffers/GUniformBufferGL20.h
-        src/gapi/ogl2.0/GRenderTargetGL20.cpp
-        src/gapi/ogl2.0/GRenderTargetGL20.h
-        src/gapi/ogl2.0/GDeviceGL20.cpp
-        src/gapi/ogl2.0/GDeviceGL20.h
-        src/gapi/ogl2.0/meshes/GMeshGL20.cpp
-        src/gapi/ogl2.0/meshes/GMeshGL20.h
-        src/gapi/ogl2.0/GVertexBufferBindingsGL20.cpp
-        src/gapi/ogl2.0/GVertexBufferBindingsGL20.h
-        src/gapi/ogl2.0/GShaderPermutationGL20.cpp
-        src/gapi/ogl2.0/GShaderPermutationGL20.h
-        src/gapi/ogl2.0/shaders/GM2ShaderPermutationGL20.cpp
-        src/gapi/ogl2.0/shaders/GM2ShaderPermutationGL20.h
-        src/gapi/UniformBufferStructures.h
-        src/gapi/ogl2.0/meshes/GM2MeshGL20.cpp
-        src/gapi/ogl2.0/meshes/GM2MeshGL20.h
-        src/gapi/ogl2.0/textures/GTextureGL20.cpp
-        src/gapi/ogl2.0/textures/GTextureGL20.h
-        src/gapi/ogl2.0/shaders/GM2ParticleShaderPermutationGL20.cpp
-        src/gapi/ogl2.0/shaders/GM2ParticleShaderPermutationGL20.h
-        src/gapi/ogl2.0/meshes/GParticleMeshGL20.cpp
-        src/gapi/ogl2.0/meshes/GParticleMeshGL20.h
-        src/gapi/ogl2.0/shaders/GWMOShaderPermutationGL20.cpp
-        src/gapi/ogl2.0/shaders/GWMOShaderPermutationGL20.h
-        src/gapi/ogl2.0/shaders/GAdtShaderPermutationGL20.cpp
-        src/gapi/ogl2.0/shaders/GAdtShaderPermutationGL20.h
-        src/gapi/ogl2.0/GOcclusionQueryGL20.cpp
-        src/gapi/ogl2.0/GOcclusionQueryGL20.h)
-endif()
 
 set(OPENGL33_IMPLEMENTATION
         src/gapi/ogl3.3/textures/GBlpTextureGL33.cpp
@@ -410,120 +291,6 @@ set(OPENGL33_IMPLEMENTATION
         src/gapi/ogl3.3/shaders/GWaterfallShaderGL33.cpp
         src/gapi/ogl3.3/shaders/GWaterfallShaderGL33.h)
 
-if (LINK_OGL4)
-set(OPENGL4x_IMPLEMENTATION    src/gapi/ogl4.x/textures/GBlpTextureGL4x.cpp
-        src/gapi/ogl4.x/textures/GBlpTextureGL4x.h
-        src/gapi/ogl4.x/buffers/GVertexBufferGL4x.cpp
-        src/gapi/ogl4.x/buffers/GVertexBufferGL4x.h
-        src/gapi/ogl4.x/buffers/GIndexBufferGL4x.cpp
-        src/gapi/ogl4.x/buffers/GIndexBufferGL4x.h
-        src/gapi/ogl4.x/buffers/GUniformBufferGL4x.cpp
-        src/gapi/ogl4.x/buffers/GUniformBufferGL4x.h
-        src/gapi/ogl4.x/GRenderTargetGL4x.cpp
-        src/gapi/ogl4.x/GRenderTargetGL4x.h
-        src/gapi/ogl4.x/GDeviceGL4x.cpp
-        src/gapi/ogl4.x/GDeviceGL4x.h
-        src/gapi/ogl4.x/meshes/GMeshGL4x.cpp
-        src/gapi/ogl4.x/meshes/GMeshGL4x.h
-        src/gapi/ogl4.x/GVertexBufferBindingsGL4x.cpp
-        src/gapi/ogl4.x/GVertexBufferBindingsGL4x.h
-        src/gapi/ogl4.x/GShaderPermutationGL4x.cpp
-        src/gapi/ogl4.x/GShaderPermutationGL4x.h
-        src/gapi/ogl4.x/shaders/GM2ShaderPermutationGL4x.cpp
-        src/gapi/ogl4.x/shaders/GM2ShaderPermutationGL4x.h
-        src/gapi/UniformBufferStructures.h
-        src/gapi/ogl4.x/meshes/GM2MeshGL4x.cpp
-        src/gapi/ogl4.x/meshes/GM2MeshGL4x.h
-        src/gapi/ogl4.x/textures/GTextureGL4x.cpp
-        src/gapi/ogl4.x/textures/GTextureGL4x.h
-        src/gapi/ogl4.x/shaders/GM2ParticleShaderPermutationGL4x.cpp
-        src/gapi/ogl4.x/shaders/GM2ParticleShaderPermutationGL4x.h
-        src/gapi/ogl4.x/meshes/GParticleMeshGL4x.cpp
-        src/gapi/ogl4.x/meshes/GParticleMeshGL4x.h
-        src/gapi/ogl4.x/shaders/GWMOShaderPermutationGL4x.cpp
-        src/gapi/ogl4.x/shaders/GWMOShaderPermutationGL4x.h
-        src/gapi/ogl4.x/shaders/GAdtShaderPermutationGL4x.cpp
-        src/gapi/ogl4.x/shaders/GAdtShaderPermutationGL4x.h
-        src/gapi/ogl4.x/GOcclusionQueryGL4x.cpp
-        src/gapi/ogl4.x/GOcclusionQueryGL4x.h src/gapi/ogl4.x/syncronization/GPUFenceGL44.cpp src/gapi/ogl4.x/syncronization/GPUFenceGL44.h src/engine/persistance/header/skelFileHeader.h)
-endif()
-
-set(Vulkan_INCLUDE_DIR "")
-if (LINK_VULKAN)
-    set(VULKAN_IMPLEMENTATION
-            src/include/vulkancontext.h
-            src/gapi/vulkan/GDeviceVulkan.cpp
-            src/gapi/vulkan/GDeviceVulkan.h
-            src/gapi/vulkan/vkAllocator.cpp
-            src/gapi/vulkan/GVertexBufferBindingsVLK.cpp
-            src/gapi/vulkan/shaders/GShaderPermutationVLK.cpp
-            src/gapi/vulkan/shaders/GAdtShaderPermutationVLK.cpp
-            src/gapi/vulkan/shaders/GM2ShaderPermutationVLK.cpp
-            src/gapi/vulkan/shaders/GM2ParticleShaderPermutationVLK.cpp
-            src/gapi/vulkan/shaders/GM2RibbonShaderPermutationVLK.cpp
-            src/gapi/vulkan/shaders/GWMOShaderPermutationVLK.cpp
-            src/gapi/vulkan/meshes/GM2MeshVLK.cpp
-            src/gapi/vulkan/meshes/GMeshVLK.cpp
-            src/gapi/vulkan/textures/GTextureVLK.cpp
-            src/gapi/vulkan/textures/GBlpTextureVLK.cpp
-            src/gapi/vulkan/buffers/GUniformBufferVLK.cpp
-            src/gapi/vulkan/buffers/GVertexBufferDynamicVLK.cpp
-            src/gapi/vulkan/buffers/GVertexBufferVLK.cpp
-            src/gapi/vulkan/buffers/GIndexBufferVLK.cpp
-            src/gapi/vulkan/GPipelineVLK.cpp src/gapi/vulkan/GPipelineVLK.h
-            src/gapi/vulkan/descriptorSets/GDescriptorPoolVLK.cpp
-            src/gapi/vulkan/descriptorSets/GDescriptorPoolVLK.h
-            src/gapi/vulkan/descriptorSets/GDescriptorSet.cpp
-            src/gapi/vulkan/descriptorSets/GDescriptorSet.h
-            src/gapi/vulkan/shaders/GImguiShaderPermutation.cpp
-            src/gapi/vulkan/shaders/GImguiShaderPermutation.h
-            src/gapi/vulkan/shaders/GWaterShaderPermutation.cpp
-            src/gapi/vulkan/shaders/GWaterShaderPermutation.h
-            src/gapi/vulkan/shaders/GSkyConusShaderVLK.cpp
-            src/gapi/vulkan/shaders/GSkyConusShaderVLK.h
-            src/gapi/vulkan/GFrameBufferVLK.cpp
-            src/gapi/vulkan/GFrameBufferVLK.h
-            src/gapi/vulkan/shaders/GFFXgauss4VLK.cpp
-            src/gapi/vulkan/shaders/GFFXgauss4VLK.h
-            src/gapi/vulkan/shaders/GFFXGlowVLK.cpp
-            src/gapi/vulkan/shaders/GFFXGlowVLK.h
-            src/gapi/vulkan/GRenderPassVLK.cpp
-            src/gapi/vulkan/GRenderPassVLK.h
-            src/gapi/vulkan/shaders/GDrawBoundingBoxVLK.cpp
-            src/gapi/vulkan/shaders/GDrawBoundingBoxVLK.h
-            src/gapi/vulkan/shaders/GWaterfallShaderVLK.cpp
-            src/gapi/vulkan/shaders/GWaterfallShaderVLK.h)
-    set(Vulkan_INCLUDE_DIR $ENV{VULKAN_SDK}/Include)
-    IF(WIN32)
-        IF (NOT Vulkan_FOUND)
-            find_library(Vulkan_LIBRARY NAMES vulkan-1 vulkan PATHS "$ENV{VULKAN_SDK}/lib")
-            IF (Vulkan_LIBRARY)
-                set(Vulkan_FOUND ON PARENT_SCOPE)
-                MESSAGE("Using bundled Vulkan library version win32, Vulkan_LIBRARY= ${Vulkan_LIBRARY}")
-            ELSE()
-                set(LINK_VULKAN OFF)
-                set(VULKAN_IMPLEMENTATION "")
-            ENDIF()
-        ENDIF()
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVK_USE_PLATFORM_WIN32_KHR")
-    ELSE(WIN32)
-        IF (NOT Vulkan_FOUND)
-            find_library(Vulkan_LIBRARY NAMES vulkan HINTS "$ENV{VULKAN_SDK}/lib" "${CMAKE_SOURCE_DIR}/libs/vulkan")
-            IF (Vulkan_LIBRARY)
-                set(Vulkan_FOUND ON PARENT_SCOPE)
-                MESSAGE("Using bundled Vulkan library version non-win32")
-            ELSE()
-                set(LINK_VULKAN OFF)
-                set(VULKAN_IMPLEMENTATION "")
-            ENDIF()
-        ENDIF()
-    ENDIF()
-
-    if (LINK_VULKAN)
-        add_definitions(-DLINK_VULKAN)
-    endif()
-endif()
-
 if (NOT MSVC)
     check_cxx_compiler_flag(-std=c++17 HAVE_FLAG_STD_CXX17)
     if(HAVE_FLAG_STD_CXX17)
@@ -545,22 +312,8 @@ if (NOT MSVC)
         endif()
     endif()
 endif()
-if (MSVC)
-    include(CheckCXXCompilerFlag)
-    CHECK_CXX_COMPILER_FLAG("/std:c++17" _cpp_17_flag_supported)
-    message("MSVC Is on")
-    if (_cpp_17_flag_supported)
-        message("/std:c++17 is supported")
-        #target_compile_options(AWebWoWViewerCpp "/std:c++17")
-        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /std:c++17")
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /std:c++17")
-        set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /std:c++17")
-        #target_compile_options(AWebWoWViewerCpp /std:c++17)
-    endif()
-endif()
 
-
-add_library(WoWViewerLib STATIC ${SOURCE_FILES} ${OPENGL20_IMPLEMENTATION} ${OPENGL33_IMPLEMENTATION} ${OPENGL4x_IMPLEMENTATION} ${VULKAN_IMPLEMENTATION})
+add_library(WoWViewerLib STATIC ${SOURCE_FILES} ${OPENGL33_IMPLEMENTATION})
 if (NOT MSVC)
     target_compile_options(WoWViewerLib PUBLIC -Werror=return-type)
 endif()
@@ -583,33 +336,16 @@ if (LINK_OPENMP)
     endif()
 endif()
 
-target_link_libraries(WoWViewerLib ${GLEW_LIBRARIES})
 target_link_libraries(WoWViewerLib TBB::tbb )
 if (UNIX AND NOT EMSCRIPTEN)
 target_link_libraries(WoWViewerLib Threads::Threads)
 endif()
 #target_link_options(WoWViewerLib PUBLIC "SHELL: -lstdc++")
 
-if (WIN32)
-    install(FILES ${GLEW_DLL}
-            DESTINATION ${CMAKE_INSTALL_BINDIR}
-            )
-endif()
-
 if (ENABLE_SIMD)
     mathfu_configure_flags(WoWViewerLib TRUE)
 else()
     mathfu_configure_flags(WoWViewerLib FALSE) #This being TRUE somehow breaks current ribbonEmitter code
-endif()
-
-if (LINK_VULKAN)
-    message("Include vulkan include dir ${Vulkan_INCLUDE_DIR}")
-    target_include_directories(WoWViewerLib PUBLIC ${Vulkan_INCLUDE_DIR})
-    target_compile_definitions(WoWViewerLib PUBLIC -DLINK_VULKAN)
-    target_link_libraries(WoWViewerLib  ${Vulkan_LIBRARY})
-    #Vulkan stuff end
-else()
-    target_compile_definitions(WoWViewerLib PUBLIC -DSKIP_VULKAN)
 endif()
 
 if (LINK_EGL)
@@ -621,21 +357,12 @@ endif()
 
 if (1)
     add_subdirectory(shaders)
-
     add_dependencies(WoWViewerLib SPIRV_EXTRACT_META)
-    if (LINK_OGL2)
-        add_dependencies(WoWViewerLib ShadersGLSL20)
-    endif()
-    if (LINK_OGL3)
-        add_dependencies(WoWViewerLib ShadersGLSL33)
-    endif()
+    add_dependencies(WoWViewerLib ShadersGLSL33)
 endif()
 
 set(ext_inDir ${PROJECT_SOURCE_DIR}/3rdparty/mathfu/include ${PROJECT_SOURCE_DIR}/3rdparty/mathfu/dependencies/vectorial/include)
 
-if (LINK_VULKAN)
-    set(ext_inDir ${ext_inDir} ${Vulkan_INCLUDE_DIR})
-endif()
 set(WoWViewerLib_INCLUDE_DIRS ${ext_inDir} CACHE INTERNAL "")
 
 message(WoWViewerLib_INCLUDE_DIRS = ${WoWViewerLib_INCLUDE_DIRS})

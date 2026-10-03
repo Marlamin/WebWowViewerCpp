@@ -298,17 +298,6 @@ HDrawStage createSceneDrawStage(HFrameScenario sceneScenario, int width, int hei
             0.0f, 0.0f, 1,  0.0f);
     }
 
-    if (apiContainer.hDevice->getIsVulkanAxisSystem() ) {
-        auto &perspectiveMatrix = cameraMatricesRendering->perspectiveMat;
-
-        static const mathfu::mat4 vulkanMatrixFix2 = mathfu::mat4(1, 0, 0, 0,
-                                                                  0, -1, 0, 0,
-                                                                  0, 0, 1.0/2.0, 1/2.0,
-                                                                  0, 0, 0, 1).Transpose();
-
-        perspectiveMatrix = vulkanMatrixFix2 * perspectiveMatrix;
-    }
-
     auto clearColor = apiContainer.getConfig()->clearColor;
     if (isScreenshot && screenshotTransparent) {
         clearColor[0] = 0.0f;
@@ -403,21 +392,7 @@ extern "C" {
 //        testConf->setRenderM2(true);
 //        testConf->setRenderWMO(true);
 
-        EmscriptenWebGLContextAttributes contextAttributes;
-        emscripten_webgl_get_context_attributes(emscripten_webgl_get_current_context(), &contextAttributes);
-
-        //TODO: Check max uniform vectors
-        std::string glVersion = "ogl2";
-        GLint uboSize = 0;
-        if ((contextAttributes.majorVersion >= 2) ) {
-//            this will be 0 for Apples
-            glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &uboSize);
-            if (uboSize > 0) {
-                glVersion = "ogl3";
-            }
-        }
-
-        auto hdevice = IDeviceFactory::createDevice(glVersion, nullptr);
+        auto hdevice = IDeviceFactory::createDevice();
 
         apiContainer->databaseHandler = nullptr;
         apiContainer->hDevice = hdevice;

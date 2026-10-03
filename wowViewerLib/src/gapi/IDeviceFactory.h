@@ -8,13 +8,9 @@
 #include <string>
 #include "interface/IDevice.h"
 
-
-
 class IDeviceFactory {
 public:
-    static HGDevice createDevice(std::string gapiName, void* data);
-
+    static HGDevice createDevice();
 };
-
 
 #endif //AWEBWOWVIEWERCPP_IDEVICEFACTORY_H

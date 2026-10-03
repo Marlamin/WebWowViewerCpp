@@ -119,10 +119,6 @@ SceneComposer::SceneComposer(HApiContainer apiContainer) : m_apiContainer(apiCon
 
 void SceneComposer::DoCulling() {
     static const mathfu::vec3 upVector(0,0,1);
-    static const mathfu::mat4 vulkanMatrixFix = mathfu::mat4(1, 0, 0, 0,
-                                                             0, -1, 0, 0,
-                                                             0, 0, 1.0/2.0, 1/2.0,
-                                                             0, 0, 0, 1).Transpose();
 
     int currentFrame = m_apiContainer->hDevice->getCullingFrameNumber();
     auto frameScenario = m_frameScenarios[currentFrame];
@@ -240,13 +236,6 @@ void SceneComposer::DoUpdate() {
     logExecution
     textureUploadCNT.endMeasurement();
 
-    if (device->getIsVulkanAxisSystem()) {
-        drawStageAndDepsCNT.beginMeasurement();
-        if (frameScenario != nullptr) {
-            m_apiContainer->hDevice->drawStageAndDeps(frameScenario->getDrawStage());
-        }
-        drawStageAndDepsCNT.endMeasurement();
-    }
     logExecution
     endUpdateCNT.beginMeasurement();
     device->endUpdateForNextFrame();
@@ -328,7 +317,7 @@ void SceneComposer::draw(HFrameScenario frameScenario) {
     }
     logExecution
     m_apiContainer->hDevice->beginFrame();
-    if (thisFrameScenario != nullptr && !m_apiContainer->hDevice->getIsVulkanAxisSystem()) {
+    if (thisFrameScenario != nullptr) {
         drawStageAndDepsCNT.beginMeasurement();
 
         m_apiContainer->hDevice->drawStageAndDeps(thisFrameScenario->getDrawStage());

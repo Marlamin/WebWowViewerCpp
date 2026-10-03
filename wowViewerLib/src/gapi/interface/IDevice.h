@@ -27,9 +27,6 @@ class gMeshTemplate;
 #include <functional>
 #include <algorithm>
 #include "syncronization/IGPUFence.h"
-#ifdef LINK_VULKAN
-#include <vulkan/vulkan_core.h>
-#endif
 
 typedef std::shared_ptr<IVertexBufferDynamic> HGVertexBufferDynamic;
 typedef std::shared_ptr<IVertexBuffer> HGVertexBuffer;
@@ -127,14 +124,6 @@ struct ShaderContentCacheRecordHasher {
     };
 };
 
-#ifdef LINK_VULKAN
-struct vkCallInitCallback {
-    std::function<void(char** &extensionNames, int &extensionCnt)> getRequiredExtensions;
-    std::function<VkSurfaceKHR(VkInstance vkInstance )> createSurface;
-    int extensionCnt;
-};
-#endif
-
 struct FramebufAvalabilityStruct {
     int width; int height;
     std::vector<ITextureFormat> attachments;
@@ -182,7 +171,6 @@ class IDevice {
         virtual bool getIsCompressedTexturesSupported();
         virtual bool getIsAnisFiltrationSupported();
         virtual float getAnisLevel() = 0;
-        virtual bool getIsVulkanAxisSystem() {return false;}
         virtual bool getIsRenderbufferSupported() {return false;}
 
         virtual void initUploadThread(){}
@@ -255,8 +243,5 @@ typedef std::shared_ptr<IDevice> HGDevice;
             } \
         } while(0)
 #endif
-
-#define ERR_GUARD_VULKAN(expr) TEST((expr) >= 0)
-
 
 #endif //AWEBWOWVIEWERCPP_IDEVICE_H

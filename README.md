@@ -1,8 +1,3 @@
 # WebWowViewerCpp
 
-The aim of this project is to create an opensource viewer of models and maps for World of Warcraft.
-
-There are two frontends built using this code: standalone map viewer and webgl library built for web.
-
-Webgl version of model viewer runs on https://wow.tools/mv/ page
-
+Fork of older version of https://github.com/Deamon87/WebWowViewerCpp meant for [wow.tools.local](https://github.com/Marlamin/wow.tools.local)'s web-based modelviewer. 

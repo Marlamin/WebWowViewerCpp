@@ -8,13 +8,10 @@
 #include <ratio>
 
 void FrameCounter::beginMeasurement() {
-//#ifndef SKIP_VULKAN
     m_startTime = std::chrono::high_resolution_clock::now();
-//#endif
 }
 
 void FrameCounter::endMeasurement() {
-//    #ifndef SKIP_VULKAN
     hi_res_time_point end = std::chrono::high_resolution_clock::now();
     frameCounter++;
 
@@ -33,6 +30,4 @@ void FrameCounter::endMeasurement() {
         frameCounter = 0;
         m_accomulatedTimeInterval = 0;
     }
-
-//#endif
 }

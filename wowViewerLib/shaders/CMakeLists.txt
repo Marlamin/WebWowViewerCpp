@@ -62,7 +62,7 @@ else()
 endif()
 
 
-macro(configure_filesVLK srcDir srcCommonDir destDir destDirGL20 destDirGL33 )
+macro(configure_filesVLK srcDir srcCommonDir destDir destDirGL33 )
     message(STATUS "Configuring directory ${destDir}")
     make_directory(${destDir})
 
@@ -114,43 +114,14 @@ macro(configure_filesVLK srcDir srcCommonDir destDir destDirGL20 destDirGL33 )
             list(APPEND SPIRV_BINARY_FILES_NON_OPT ${SPIRV_NonOpt})
             list(APPEND SPIRV_BINARY_FILES_OPT ${SPIRVOpt})
 
-            #Generate GLSL for ogl33 and ogl20 from spirv
-            set(GLSL20_FILE ${destDirGL20}/${FILE_NAME})
+            #Generate GLSL for ogl33
             set(GLSL33_FILE ${destDirGL33}/${FILE_NAME})
 
-            get_filename_component(GLSL20_FILE_FULLPATH "${GLSL20_FILE}"
-                    REALPATH BASE_DIR "${CMAKE_BINARY_DIR}")
-
             SET(OGL3_GLSL_OPTION "")
-            if (ANDROID)
-                SET(OGL3_GLSL_OPTION "-glslEs310")
-            elseif(EMSCRIPTEN)
-                SET(OGL3_GLSL_OPTION "-glslEs300")
-            else()
-                SET(OGL3_GLSL_OPTION "-glsl330")
-            endif()
-
-            SET(OGL2_GLSL_OPTION "")
-            if (ANDROID OR EMSCRIPTEN)
-                SET(OGL2_GLSL_OPTION "-glsl100")
-            else()
-                SET(OGL2_GLSL_OPTION "-glsl100")
-            endif()
-
-
-            add_custom_command(
-                    OUTPUT ${GLSL20_FILE}
-                    COMMAND ${CMAKE_COMMAND} -E make_directory "${destDirGL20}"
-                    COMMAND ${APP_RUN_PREFIX} ${PATH_TO_NATIVE_SPIRV_REFLECTION} ${OGL2_GLSL_OPTION} ${SPIRV_NonOpt} > ${GLSL20_FILE_FULLPATH}
-                    DEPENDS ${SPIRV_NonOpt} spirv_reflection)
-
-            list(APPEND GLSL20Files ${GLSL20_FILE})
-
-
+            SET(OGL3_GLSL_OPTION "-glslEs300")
+       
             get_filename_component(GLSL30_FILE_FULLPATH "${GLSL33_FILE}"
                     REALPATH BASE_DIR "${CMAKE_BINARY_DIR}")
-
-
 
             add_custom_command(
                     OUTPUT ${GLSL33_FILE}
@@ -174,28 +145,15 @@ configure_filesVLK(
         ${PROJECT_SOURCE_DIR}/shaders/glsl/vulkan
         ${PROJECT_SOURCE_DIR}/shaders/glsl/common
         ${GLSL_TARGET_FOLDER}/spirv
-        ${GLSL_TARGET_FOLDER}/glsl/glsl20/
         ${GLSL_TARGET_FOLDER}/glsl/glsl3.3/)
 
 add_custom_command(
         OUTPUT ${SPIRV_META_FILE}
         COMMAND ${APP_RUN_PREFIX} ${PATH_TO_NATIVE_SPIRV_REFLECTION} -sf ${SPIRV_BINARY_FILES} > ${SPIRV_META_FILE}
-        DEPENDS ${SPIRV_BINARY_FILES} spirv_reflection glslangValidator ShadersVulkanNonOpt
+        DEPENDS ${SPIRV_BINARY_FILES} spirv_reflection glslangValidator
 )
 
 add_custom_target(SPIRV_EXTRACT_META DEPENDS ${SPIRV_META_FILE})
-
-
-add_custom_target(
-        ShadersGLSL20
-        DEPENDS ${GLSL20Files}
-)
-add_custom_target(
-        ShadersVulkanNonOpt
-        DEPENDS ${SPIRV_BINARY_FILES_NON_OPT}
-)
-add_dependencies(ShadersGLSL20 spirv_reflection)
-
 
 add_custom_target(
         ShadersGLSL33
@@ -205,25 +163,5 @@ add_dependencies(ShadersGLSL33 spirv_reflection)
 
 add_custom_target(
     GenerateForWebgl
-    DEPENDS ${GLSL20Files}
     DEPENDS ${GLSL30Files}
 )
-
-#Add shaders on install
-if (NOT EMSCRIPTEN)
-    if(LINK_OGL2)
-        install(FILES ${GLSL20Files}
-                DESTINATION ${CMAKE_INSTALL_BINDIR}/glsl/glsl20/
-        )
-    endif()
-    if(LINK_OGL3)
-        install(FILES ${GLSL30Files}
-                DESTINATION ${CMAKE_INSTALL_BINDIR}/glsl/glsl3.3/
-        )
-    endif()
-    if(LINK_VULKAN)
-        install(FILES ${SPIRV_BINARY_FILES_NON_OPT}
-                DESTINATION ${CMAKE_INSTALL_BINDIR}/spirv
-        )
-    endif()
-endif()
