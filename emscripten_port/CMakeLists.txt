@@ -81,11 +81,12 @@ target_link_options(project PUBLIC "SHELL: -s TOTAL_MEMORY=40MB")
 target_link_options(project PUBLIC "SHELL: -s FETCH=1 -s WASM=1 -s USE_WEBGL2=1 -s FULL_ES3=1")
 
 target_link_options(project PUBLIC "SHELL: -fno-rtti ")
-target_link_options(project PUBLIC "SHELL: -s EXPORTED_RUNTIME_METHODS=[\"FS\",\"UTF8ToString\"]")
+target_link_options(project PUBLIC "SHELL: -s EXPORTED_FUNCTIONS=[\"_malloc\",\"_free\",\"_main\",\"UTF8ToString\"]")
+target_link_options(project PUBLIC "SHELL: -s EXPORTED_RUNTIME_METHODS=[\"FS\",\"HEAP8\",\"HEAPU8\",\"HEAP32\"]")
 target_link_options(project PUBLIC "SHELL: -s ENVIRONMENT=\"web\" " )
-target_link_options(project PUBLIC "SHELL: -s USE_PTHREADS=0")
+target_link_options(project PUBLIC "SHELL: -pthread=0")
 target_link_options(project PUBLIC "SHELL: --bind ")
-#target_link_options(project PUBLIC "SHELL: -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=2")
+#target_link_options(project PUBLIC "SHELL: -pthread=1 -s PTHREAD_POOL_SIZE=2")
 #target_link_options(project PUBLIC "SHELL: -s ENVIRONMENT=\"web,worker\" " )
 
 set_target_properties(project
