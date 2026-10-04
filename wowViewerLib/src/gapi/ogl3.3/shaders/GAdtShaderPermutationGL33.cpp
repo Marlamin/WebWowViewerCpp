@@ -17,10 +17,11 @@ void GAdtShaderPermutationGL33::compileShader(const std::string &vertExtraDef, c
     glUniform1i(this->getUnf("uLayer1"), 1);
     glUniform1i(this->getUnf("uLayer2"), 2);
     glUniform1i(this->getUnf("uLayer3"), 3);
-    glUniform1i(this->getUnf("uAlphaTexture"), 4);
-    glUniform1i(this->getUnf("uLayerHeight0"), 5);
-    glUniform1i(this->getUnf("uLayerHeight1"), 6);
-    glUniform1i(this->getUnf("uLayerHeight2"), 7);
-    glUniform1i(this->getUnf("uLayerHeight3"), 8);
+    glUniform1i(this->getUnf("uLayer4"), 4);
+    glUniform1i(this->getUnf("uLayer5"), 5);
+    glUniform1i(this->getUnf("uLayer6"), 6);
+    glUniform1i(this->getUnf("uLayer7"), 7);
+    glUniform1i(this->getUnf("uAlphaTexture"), 8);
+    glUniform1i(this->getUnf("uAlphaTexture2"), 9);
     glUseProgram(0);
 }

@@ -93,6 +93,7 @@ private:
     void createVBO();
     void createMeshes();
     void loadAlphaTextures();
+    bool layerHasHeightTexture(int chunkIndex, int layerIndex);
 
     HApiContainer m_api;
     IMapApi *m_mapApi;
@@ -131,6 +132,7 @@ private:
 
 private:
     std::vector<HGTexture> alphaTextures;
+    std::vector<HGTexture> alphaTextures2;
     HBlpTexture lodDiffuseTexture  = nullptr;
     HBlpTexture lodNormalTexture  = nullptr;
 

@@ -667,7 +667,7 @@ void AdtObject::createMeshes() {
             aTemplate.ubo[3] = adtWideBlockPS;
             aTemplate.ubo[4] = m_api->hDevice->createUniformBufferChunk(sizeof(ADT::meshWideBlockPS));
 
-            aTemplate.textureCount = 18;
+            aTemplate.textureCount = 10;
 
             aTemplate.texture = std::vector<HGTexture>(aTemplate.textureCount, nullptr);
 
@@ -676,16 +676,22 @@ void AdtObject::createMeshes() {
                 auto &blockPS = self->getObject<ADT::meshWideBlockPS>();
 
                 for (int j = 0; j < 8; j++) {
-                    blockPS.uHeightOffset[j] = 0.0f;
-                    blockPS.uHeightScale[j] = 1.0f;
+                    // change compared to old mv: wiki says scale should be 0 and offset 1 by default, it was swapped before
+                    blockPS.uHeightOffset[j] = 1.0f;
+                    blockPS.uHeightScale[j] = 0.0f;
                     blockPS.animationMat[j] = mathfu::mat4::Identity();
                 }
 
                 for (int j = 0; j < adtFileTex->mcnkStructs[chunkIndex].mclyCnt; j++) {
                     if ((adtFileTex->mtxp_len > 0) && !noLayers) {
                         auto const &textureParams = adtFileTex->mtxp[adtFileTex->mcnkStructs[chunkIndex].mcly[j].textureId];
-                        blockPS.uHeightOffset[j] = textureParams.heightOffset;
-                        blockPS.uHeightScale[j] = textureParams.heightScale;
+                        if (this->layerHasHeightTexture(chunkIndex, j)) {
+                            blockPS.uHeightOffset[j] = textureParams.heightOffset;
+                            blockPS.uHeightScale[j] = textureParams.heightScale;
+                        } else {
+                            blockPS.uHeightOffset[j] = textureParams.heightScale + textureParams.heightOffset;
+                            blockPS.uHeightScale[j] = 0.0f;
+                        }
                     }
                     blockPS.animationMat[j] = this->texturesPerMCNK[chunkIndex].animTexture[j];
                 }
@@ -702,48 +708,49 @@ void AdtObject::createMeshes() {
             });
 
 
-            if (m_adtFileTex->mtxp_len > 0 && !noLayers) {
+            if (!noLayers) {
                 for (int j = 0; j < m_adtFileTex->mcnkStructs[i].mclyCnt; j++) {
-                    auto const &textureParams = m_adtFileTex->mtxp[m_adtFileTex->mcnkStructs[i].mcly[j].textureId];
+                    int textureId = m_adtFileTex->mcnkStructs[i].mcly[j].textureId;
 
-                    HGTexture layer_height = device->getWhiteTexturePixel();
-                    if (textureParams.flags.do_not_load_specular_or_height_texture_but_use_cubemap == 0) {
-                        if (!feq(textureParams.heightScale, 0.0)) {
-                            layer_height = getAdtHeightTexture(m_adtFileTex->mcnkStructs[i].mcly[j].textureId);
-                        }
+                    // change compared to old mv: instead of binding both textures we just bind the height texture, note that we do lose the specular channel like this
+                    if (layerHasHeightTexture(i, j)) {
+                        aTemplate.texture[j] = getAdtHeightTexture(textureId);
+                    } else {
+                        aTemplate.texture[j] = getAdtTexture(textureId);
                     }
-
-                    aTemplate.texture[j + 5] = layer_height;
-                }
-            } else {
-                for (int j = 0; j < 4; j++) {
-                    aTemplate.texture[j + 5] = device->getWhiteTexturePixel();
                 }
             }
 
-            if (!noLayers) {
-                aTemplate.texture[4] = alphaTextures[i];
-            } else {
-                aTemplate.texture[4] = device->getBlackTexturePixel();
-            }
-
-            if (!noLayers) {
-                for (int j = 0; j < m_adtFileTex->mcnkStructs[i].mclyCnt; j++) {
-                    auto &layerDef = m_adtFileTex->mcnkStructs[i].mcly[j];
-
-                    HGTexture layer_x = getAdtTexture(m_adtFileTex->mcnkStructs[i].mcly[j].textureId);
-                    aTemplate.texture[j] = layer_x;
-                }
-            } else {
-                for (int j = 0; j < 4; j++) {
+            // ensure all texture slots have something
+            for (int j = 0; j < 8; j++) {
+                if (aTemplate.texture[j] == nullptr) {
                     aTemplate.texture[j] = device->getWhiteTexturePixel();
                 }
+            }
+
+            if (!noLayers) {
+                aTemplate.texture[8] = alphaTextures[i];
+                aTemplate.texture[9] = alphaTextures2[i];
+            } else {
+                aTemplate.texture[8] = device->getBlackTexturePixel();
+                aTemplate.texture[9] = device->getBlackTexturePixel();
             }
 
             HGMesh hgMesh = device->createMesh(aTemplate);
             adtMeshes[i] = hgMesh;
         }
     }
+}
+
+bool AdtObject::layerHasHeightTexture(int chunkIndex, int layerIndex) {
+    if (m_adtFileTex->mtxp_len <= 0){
+        return false;
+    }
+
+    auto const &textureParams = m_adtFileTex->mtxp[m_adtFileTex->mcnkStructs[chunkIndex].mcly[layerIndex].textureId];
+    auto hasHeightScale = !feq(textureParams.heightScale, 0.0);
+
+    return textureParams.flags.do_not_load_specular_or_height_texture_but_use_cubemap == 0 && hasHeightScale;
 }
 
 void AdtObject::loadAlphaTextures() {
@@ -757,18 +764,21 @@ void AdtObject::loadAlphaTextures() {
 
     int createdThisRun = 0;
     for (int i = 0; i < chunkCount; i++) {
-        HGTexture alphaTexture = m_api->hDevice->createTexture(false, false);
         std::vector<uint8_t> alphaTextureData;
         m_adtFileTex->processTexture(m_wdtFile->mphd->flags, i, alphaTextureData);
 
+        HGTexture alphaTexture = m_api->hDevice->createTexture(false, false);
         alphaTexture->loadData(texWidth, texHeight, &alphaTextureData[0], ITextureFormat::itRGBA);
 
+        // second alpha texture for midnight+ terrain layer support 
+        HGTexture alphaTexture2 = m_api->hDevice->createTexture(false, false);
+        alphaTexture2->loadData(texWidth, texHeight, &alphaTextureData[texWidth * texHeight * 4], ITextureFormat::itRGBA);
+
         alphaTextures.push_back(alphaTexture);
+        alphaTextures2.push_back(alphaTexture2);
     }
     this->alphaTexturesLoaded += createdThisRun;
 }
-
-
 
 void AdtObject::collectMeshes(ADTObjRenderRes &adtRes, std::vector<HGMesh> &opaqueMeshes, std::vector<HGMesh> &transparentMeshes, int renderOrder) {
     if (m_freeStrategy != nullptr) m_freeStrategy(false, true, m_mapApi->getCurrentSceneTime());

@@ -499,6 +499,12 @@ void AdtFile::processTexture(const MPHDFlags &wdtObjFlags, int i, std::vector<ui
     for (int j = 0; j <mcnkObj.mclyCnt; j++ ) {
         int alphaOffs = layers[j].offsetInMCAL;
         int offO = j;
+
+        // midnight+ layer nums should go in second alpha texture
+        if(j >= 4) {
+            offO = (64 * 64 * 4) + (j - 4); 
+        }
+
         int readForThisLayer = 0;
 
         if (!layers[j].flags.use_alpha_map) {
