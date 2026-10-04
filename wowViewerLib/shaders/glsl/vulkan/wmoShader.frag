@@ -328,8 +328,10 @@ void main() {
     );
 
     finalColor = makeFog(fogData, finalColor, vPosition.xyz, scene.extLight.uExteriorDirectColorDir.xyz, UseLitColor_EnableAlpha_PixelShader_BlendMode.w);
-
-//    finalColor.a = 1.0; //do I really need it now?
+    // fix some modern WMOs showing up transparent/with a white hue
+    if (UseLitColor_EnableAlpha_PixelShader_BlendMode.w <= 1) {
+        finalColor.a = 1.0;
+    }
 
     outputColor = finalColor;
 }
